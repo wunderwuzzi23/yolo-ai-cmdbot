@@ -5,25 +5,17 @@ import openai
 import sys
 import subprocess
 from termcolor import colored
+from pathlib import Path
 
-# Check if we have an Open API key set
+# Two options for the user to specify they openai api key
 openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key_path = Path.home()/".openai.apikey"
 
-if openai.api_key == "":
-    openai.api_key = open("~/.openai.apikey", "r").read()
-    print("Environment variable OPENAI_API_KEY is not set.")
-    print("~/.openai.apikey is not set either. Exiting.")
-    sys.exit(-1)
+ask = False             # safety switch -a
+yolo = ""               # user's answer to safety switch
+command_start_idx = 1   # command starts at which argv index?
 
-# to allow easy/natural use we don't require 
-# the input to be a single string
-# so the user can just type yolo what is my name?
-# without having to put the question between ''
-
-ask = False
-yolo = ""
-command_start_idx = 1
-
+# parsing weirdness
 if len(sys.argv) <2:
   sys.exit(-1)
 
@@ -31,9 +23,13 @@ if sys.argv[1] == "-a":
   ask = True
   command_start_idx = 2
 
+# to allow easy/natural use we don't require the input to be a 
+# single string. So, the user can just type yolo what is my name?
+# without having to put the question between ''
 arguments = sys.argv[command_start_idx:]
 user_prompt = " ".join(arguments)
 
+# do we have a prompt from the user?
 if user_prompt == "":
     print ("No user prompt specified.")
     sys.exit(-1)
@@ -67,4 +63,4 @@ if ask == True:
   print()
 
 if yolo == "Y" or yolo == "":
-    subprocess.run(resulting_command, shell=True)
+  subprocess.run(resulting_command, shell=True)
