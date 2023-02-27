@@ -17,7 +17,8 @@ There are two ways to configure the key:
 # Using yolo
 
 Here are a couple of examples. By default the command that comes back from GPT-3 will be immediatly executed (yolo!). 
-If you want to inspect the command before running add the `-a` argument, e.g `yolo -a delete the file test.txt`.
+
+If you want to inspect the command it's executed, add the `-a` argument, e.g `yolo -a delete the file test.txt`.
 
 More examples:
 
