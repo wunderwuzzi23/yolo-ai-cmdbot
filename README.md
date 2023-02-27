@@ -29,6 +29,7 @@ yolo is there an ssh-agent process running
 yolo create a file named test.txt and write my user name into it
 yolo print the contents of the test.txt file
 yolo -a delete the test.txt file
+yolo whats the current price of Bitcoin in USD
 ```
 
 # License
