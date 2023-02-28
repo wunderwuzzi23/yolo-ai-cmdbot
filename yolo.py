@@ -42,12 +42,8 @@ if user_prompt == "":
 
 
 # Get shell info for a better prompt
-# Unix based Shell? 
-shell = os.environ["SHELL"]   
-
-# Note: Have never tested this on Windows much
-if shell == None:
-  shell = "powershell.exe"
+# Unix based SHELL (/bin/bash, /bin/zsh), otherwise assuming it's Windows
+shell = os.environ.get("SHELL", "powershell.exe")    
 
 # Construct the prompt
 pre_prompt =  "Translate the following question into a {} command. ".format(shell) 
@@ -65,7 +61,6 @@ prompt = pre_prompt + user_prompt
 #let's be nice and make it a question
 if prompt[-1:] != "?":
   prompt+="?"
-
 
 #print ("The prompt is: "+prompt)
 response = openai.Completion.create(
@@ -87,7 +82,7 @@ if resulting_command.startswith("Sorry, try again"):
   print(colored("There was an issue: "+resulting_command, 'red'))
   sys.exit(-1)
 
-print("Command: " + colored(resulting_command, 'cyan'))
+print("Command: " + colored(resulting_command, 'blue'))
 if ask == True:
   print("Execute the command? Y/n ==> ", end = '')
   yolo = input()
@@ -96,6 +91,7 @@ if ask == True:
 if yolo == "Y" or yolo == "":
   if shell == "powershell.exe":
     subprocess.run([shell, "/c", resulting_command], shell=False)  
-  else: #Unix based - /bin/bash, /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
+  else: 
+    # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
     subprocess.run([shell, "-c", resulting_command], shell=False)
 

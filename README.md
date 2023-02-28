@@ -8,7 +8,12 @@ chmod +x yolo.py
 alias yolo=$(pwd)/yolo.py
 ```
 
-## OpenAI API Key configuration
+# Windows
+
+You can use: `pyinstaller yolo.py --onefile` to get a single `yolo.exe` to run.
+Windows is less tested, but it does work.
+
+# OpenAI API Key configuration
 
 There are two ways to configure the key:
 - You can either `export OPENAI_API_KEY=<yourkey>`
@@ -16,7 +21,9 @@ There are two ways to configure the key:
 
 # Using yolo
 
-Here are a couple of examples. By default the command that comes back from GPT-3 will be immediatly executed (yolo!). 
+Here are a couple of examples on how this utility can be used.
+
+**WARNING**: By default the command that comes back from GPT-3 will be immediatly executed (yolo!). 
 
 If you want to inspect the command that is executed, add the `-a` argument, e.g `yolo -a delete the file test.txt`.
 
