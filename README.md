@@ -30,6 +30,12 @@ yolo create a file named test.txt and write my user name into it
 yolo print the contents of the test.txt file
 yolo -a delete the test.txt file
 yolo whats the current price of Bitcoin in USD
+yolo whats the current price of Bitcoin in USD. Extract the price only
+yolo look at the ssh logs to see if any suspicious logons accured
+yolo is the user hacker logged in right now?
+yolo do i have a firewall running?
+yolo create a hostnames.txt file and add 10 typical hostnames based on planet names to it
+yolo write a new bash script file called scan.sh, with the contents to  iterate over hostnames.txt and invokes a default nmap scan on each host. Make it over multiple lines with comments and annotiations.
 ```
 
 # License
