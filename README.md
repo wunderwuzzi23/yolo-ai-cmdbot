@@ -11,8 +11,11 @@ alias yolo=$(pwd)/yolo.py
 
 # Windows
 
-You can use: `pyinstaller yolo.py --onefile` to get a single `yolo.exe` to run.
-Windows is less tested, it does work and will use PowerShell.
+Windows is less tested, it does work though and will use PowerShell.
+
+`python.exe yolo.py what is my username`
+
+Have fun.
 
 # OpenAI API Key configuration
 
