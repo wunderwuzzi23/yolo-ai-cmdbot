@@ -46,7 +46,7 @@ shell = os.environ.get("SHELL", "powershell.exe")
 
 # Construct the prompt
 pre_prompt = open("prompt.txt","r").read()
-pre_prompt.replace("{}", shell)
+pre_prompt = pre_prompt.replace("{}", shell)
 prompt = pre_prompt + user_prompt
 
 #make the first line also the system prompt
