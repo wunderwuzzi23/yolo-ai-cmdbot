@@ -9,10 +9,23 @@ alias yolo=$(pwd)/yolo.py
 alias computer=$(pwd)/yolo.py #optional
 ```
 
+## Aliases
+
+To set the alias on each login, add them to your .bashrc or .bash_aliases file.
+
+```
+echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases
+echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
+```
+
+## Installation script
+
 Another option is to run `source install.sh` after cloning the repo. That does the following:
 1. Copies the necessary files to `~/yolo-ai-cmdbot/`
 2. Creates two aliases `yolo` and `computer` pointint to `~/yolo-ai-cmdbot/yolo.py`
+3. Adds the aliases to the `~/bash_aliases` file (only tested on Ubuntu)
 
+That's it. Now make sure you have an OpenAI API key set.
 
 # macOS 
 

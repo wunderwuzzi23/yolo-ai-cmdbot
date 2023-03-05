@@ -40,7 +40,7 @@ if len(sys.argv) < 2:
 
 # safety switch (no yolo mode)
 if sys.argv[1] == "-a":
-  ask = True
+  ask_flag = True
   command_start_idx = 2
 
 # to allow easy/natural use we don't require the input to be a 
