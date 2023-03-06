@@ -1,12 +1,31 @@
-# Installs yolo in the user's CMD directory ( change $CMD to desired file path )
+# Installs yolo in the user's home directory
 
-TARGET_DIR=$CMD
+TARGET_DIR=~/yolo-ai-cmdbot
 TARGET_FULLPATH=$TARGET_DIR/yolo.py
 
 mkdir -p $TARGET_DIR
-cp yolo.py $TARGET_DIR
-cp prompt.txt $TARGET_DIR/yolo_prompt.txt #changed this so it doesnt conflict with possible future prompts
+cp yolo.py prompt.txt $TARGET_DIR
 chmod +x $TARGET_FULLPATH
 
-# Adds batch file to System32 so you can call it in powershell
-cp yolo.bat C:/Windows/System32
+#Linux/Mac
+
+# Creates two aliases for use
+alias yolo=$TARGET_FULLPATH
+alias computer=$TARGET_FULLPATH
+
+# Add the aliases to the logon scripts
+echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases
+echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
+
+# Windows
+# Copy yolo.bat to System32 or :
+
+# (This doesn't work, havent figured it out)
+
+# Creates two aliases for use
+alias yolo=$TARGET_FULLPATH
+alias computer=$TARGET_FULLPATH
+
+# Add the aliases to the logon scripts
+echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases
+echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
