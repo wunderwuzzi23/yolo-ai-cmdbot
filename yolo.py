@@ -12,7 +12,7 @@ import subprocess
 from termcolor import colored
 from colorama import init
 
-import dotenv
+import dotenv #Allow .env file to be used
 
 # Check if the user globally disabled the safety switch
 def get_yolo_safety_switch_config():
@@ -81,10 +81,15 @@ if __name__ == "__main__":
   yolo = ""                  # user's answer to safety switch (-a) question y/n
 
 
-  # Two options for the user to specify they openai api key. Windows: Comment out the one you are not using (Causes extra line to appear)
+  # Two options for the user to specify they openai api key.
+  #1. Place a ".env" file in same directory as this with the line:
+  #   OPENAI_API_KEY="<yourkey>"
+  #   or do `export OPENAI_API_KEY=<yourkey>` before use
   dotenv.load_dotenv()
   openai.api_key = os.getenv("OPENAI_API_KEY")
-  if not openai.api_key:
+  #2. Place a ".openai.apikey" in the home directory that holds the line:
+  #   <yourkey>
+  if not openai.api_key:  #If statement to avoid "invalid filepath" error
     home_path = os.path.expanduser("~")    
     openai.api_key_path = os.path.join(home_path,".openai.apikey")
 

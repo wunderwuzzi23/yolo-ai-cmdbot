@@ -1,20 +1,25 @@
 @echo off
 :: Installs yolo in the user's home directory
 
-::TARGET_DIR=~/yolo-ai-cmdbot  
-::TARGET_FULLPATH=$TARGET_DIR/yolo.py
 set TARGET_DIR= %HOME%yolo-ai-cmdbot
 set TARGET_FULLPATH= %TARGET_DIR%\yolo.py
 
-::mkdir -p $TARGET_DIR
-::cp yolo.py prompt.txt $TARGET_DIR
-::chmod +x $TARGET_FULLPATH
 mkdir %TARGET_DIR%
 copy yolo.py %TARGET_DIR%
 copy prompt.txt %TARGET_DIR%
 
-:: Windows: Copies .bat file to $HOME so it works similar to LINUX/MAC, avoiding having to type python.exe every time.
-:: Note: Though that maybe making it an executable would make more sense but the 
+:: Windows: Creates a yolo.bat file into %HOME% directory which will let you run similar to Linux/MacOS
+:: Example: Input: ".\yolo.bat print hello" to "yolo print hello"
 
-::Copy to home directory
-copy yolo.bat %HOME%
+:: yolo.bat can only be used in same directory; or, any directory if put in a $PATH directory (type $env:PATH in PowerShell and pick an appropriate path to paste in)
+:: C:\Windows\System32 is the $PATH directory everyone is likely to have
+
+:: Create yolo.bat and if it isn't already there input its code.
+find "@echo off" "%HOME%\yolo.bat" && (
+    echo "yolo.bat" Already Exists
+) || (
+    copy /y nul %HOME% yolo.bat
+    echo @echo off>>"%HOME%yolo.bat"
+    echo python.exe %HOME%yolo-ai-cmdbot\yolo.py %%*>>"%HOME%\yolo.bat"
+    echo Created "yolo.bat" in %HOME%
+)
