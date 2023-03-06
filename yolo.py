@@ -82,10 +82,11 @@ if __name__ == "__main__":
 
 
   # Two options for the user to specify they openai api key. Windows: Comment out the one you are not using (Causes extra line to appear)
-  home_path = os.path.expanduser("~")    
-  openai.api_key_path = os.path.join(home_path,".openai.apikey")
   dotenv.load_dotenv()
   openai.api_key = os.getenv("OPENAI_API_KEY")
+  if not openai.api_key:
+    home_path = os.path.expanduser("~")    
+    openai.api_key_path = os.path.join(home_path,".openai.apikey")
 
   # Parse arguments and make sure we have at least a single word
   if len(sys.argv) < 2:

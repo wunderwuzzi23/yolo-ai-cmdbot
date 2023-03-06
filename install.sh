@@ -16,7 +16,3 @@ alias computer=$TARGET_FULLPATH
 # Add the aliases to the logon scripts
 echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases
 echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
-
-# Windows
-# Copy yolo.bat to System32 or Home Directory :
-cp yolo.bat ~
