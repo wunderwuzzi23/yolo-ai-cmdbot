@@ -18,6 +18,10 @@ echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases
 echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
 ```
 
+## Yolo in Action
+
+![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
+
 ## Installation script
 
 Another option is to run `source install.sh` after cloning the repo. That does the following:
@@ -26,6 +30,8 @@ Another option is to run `source install.sh` after cloning the repo. That does t
 3. Adds the aliases to the `~/bash_aliases` file (only tested on Ubuntu)
 
 That's it. Now make sure you have an OpenAI API key set.
+
+
 
 # macOS 
 
@@ -70,11 +76,9 @@ https://www.youtube.com/watch?v=g6rvHWpx_Go
 [![Watch the video](https://embracethered.com/blog/images/2023/yolo-thumbnail-small.png)](https://www.youtube.com/watch?v=g6rvHWpx_Go)
 
 
-
 ## Examples
 
 Here are a couple of examples on how this utility can be used.
-
 
 ```
 yolo whats the time?
