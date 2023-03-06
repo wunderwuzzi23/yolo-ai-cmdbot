@@ -20,7 +20,7 @@ Do not creating invalid syntax
 Do not add unnecessary text in the response 
 Do not add notes or intro sentences 
 Do not show multiple distinct solutions to the question
-Do not add explanations on what the commands 
+Do not add explanations on what the commands do
 Do not return what the question was 
 Do not repeat or paraphrase the question in your response 
 Do not cause syntax errors
