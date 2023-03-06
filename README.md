@@ -29,7 +29,7 @@ That's it. Now make sure you have an OpenAI API key set.
 
 # macOS 
 
-I haven't tested it yet, but it should just work :)
+On make OS (when using `zsh`) you can't end your instructions with a question mark (unless you put the question/instructions into a string 'whats the time?'). Hoever, yolo adds a question mark regardless if there is no . or ? at the end.
 
 # Windows
 
