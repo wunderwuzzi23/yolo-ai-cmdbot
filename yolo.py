@@ -12,6 +12,8 @@ import subprocess
 from termcolor import colored
 from colorama import init
 
+import dotenv
+
 # Check if the user globally disabled the safety switch
 def get_yolo_safety_switch_config():
   
@@ -78,10 +80,12 @@ if __name__ == "__main__":
   ask_flag = False           # safety switch -a command line argument
   yolo = ""                  # user's answer to safety switch (-a) question y/n
 
-  # Two options for the user to specify they openai api key
-  home_path = os.path.expanduser("~")
-  openai.api_key = os.getenv("OPENAI_API_KEY")
+
+  # Two options for the user to specify they openai api key. Windows: Comment out the one you are not using (Causes extra line to appear)
+  home_path = os.path.expanduser("~")    
   openai.api_key_path = os.path.join(home_path,".openai.apikey")
+  dotenv.load_dotenv()
+  openai.api_key = os.getenv("OPENAI_API_KEY")
 
   # Parse arguments and make sure we have at least a single word
   if len(sys.argv) < 2:
