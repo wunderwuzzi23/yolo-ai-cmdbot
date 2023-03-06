@@ -3,7 +3,7 @@
 ```
 git clone https://github.com/wunderwuzzi23/yolo-ai-cmdbot
 cd yolo-ai-cmdbot
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 chmod +x yolo.py
 alias yolo=$(pwd)/yolo.py
 alias computer=$(pwd)/yolo.py #optional
