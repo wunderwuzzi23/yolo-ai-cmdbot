@@ -12,6 +12,8 @@ import subprocess
 from termcolor import colored
 from colorama import init
 
+import dotenv
+
 # Check if the user globally disabled the safety switch
 def get_yolo_safety_switch_config():
   
@@ -32,7 +34,7 @@ def get_full_prompt(user_prompt, shell):
   prompt_path = os.path.dirname(yolo_path)
 
   ## Load the prompt and prep it
-  prompt_file = os.path.join(prompt_path, "prompt.txt")
+  prompt_file = os.path.join(prompt_path, "yolo_prompt.txt")
   pre_prompt = open(prompt_file,"r").read()
   pre_prompt = pre_prompt.replace("{shell}", shell)
   pre_prompt = pre_prompt.replace("{os}", get_os_friendly_name())
@@ -78,10 +80,9 @@ if __name__ == "__main__":
   ask_flag = False           # safety switch -a command line argument
   yolo = ""                  # user's answer to safety switch (-a) question y/n
 
-  # Two options for the user to specify they openai api key
-  home_path = os.path.expanduser("~")
+  # Presumes the folder yolo.py is copied to has a .env
+  dotenv.load_dotenv(".env")
   openai.api_key = os.getenv("OPENAI_API_KEY")
-  openai.api_key_path = os.path.join(home_path,".openai.apikey")
 
   # Parse arguments and make sure we have at least a single word
   if len(sys.argv) < 2:
