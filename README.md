@@ -63,6 +63,14 @@ If you still want to inspect the command that is executed when safety is off, ad
 
 Let's go!
 
+# Demo Video on YouTube
+
+https://www.youtube.com/watch?v=g6rvHWpx_Go
+
+[![Watch the video](https://embracethered.com/blog/images/2023/yolo-thumbnail-small.png)](https://www.youtube.com/watch?v=g6rvHWpx_Go)
+
+
+
 ## Examples
 
 Here are a couple of examples on how this utility can be used.
