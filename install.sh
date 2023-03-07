@@ -7,6 +7,8 @@ mkdir -p $TARGET_DIR
 cp yolo.py prompt.txt $TARGET_DIR
 chmod +x $TARGET_FULLPATH
 
+#Linux/Mac
+
 # Creates two aliases for use
 alias yolo=$TARGET_FULLPATH
 alias computer=$TARGET_FULLPATH
