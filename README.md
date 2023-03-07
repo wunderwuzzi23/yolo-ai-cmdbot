@@ -36,7 +36,16 @@ That's it. Now make sure you have an OpenAI API key set.
 For windows you can run `.\install.bat` (or double-click) after cloning the repo. It will do the following:
 1. Copies the necessary files to `~/yolo-ai-cmdbot/`
 2. Creates a `yolo.bat` file in `~` that lets you run equivalent to `python.exe ~\yolo-ai-cmdbot\yolo.py`
+3. Creates a `.env` file in `~/yolo-ai-cmdbot/`
 
+You may also edit `install.bat`:
+- Changing `set INSTALL_DIR=%HOME%` to `set INSTALL_DIR={Enter directory path}` will change where the `\yolo-ai-cmdbot` folder will be made
+- Similarly, changing `set SCRIPT_DIR=%HOME%` to `set SCRIPT_DIR={Enter directory path}` will change where `yolo.bat` script will be made.
+- Uncommenting `::call :install_yolo_repository` and commenting `call :install_yolo_directory` will let you use the repository `yolo.py` instead of a seperate directory (And won't make the extra directory)
+- Uncommenting `::call :create_openai_apikey` will create a `.openai.apikey` file at the `~` directory
+- Uncommenting `::call :create_safety_off` will create a `.yolo-safety-off` file at the `~` directory
+
+That's it. Now make sure you have an OpenAI API key set.
 
 # macOS 
 
