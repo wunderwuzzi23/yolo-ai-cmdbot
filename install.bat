@@ -1,6 +1,6 @@
 @echo off
-:: INSTALL_DIR = Directory the "\yolo-ai-cmdbot" will go to
-:: SCRIPT_DIR = Directory the "yolo.bat" script will go to
+:: INSTALL_DIR = Directory the "\yolo-ai-cmdbot" will go to. Default is "~" aka "%HOME%"
+:: SCRIPT_DIR = Directory the "yolo.bat" script will go to. Default is "~" aka "%HOME%"
 set INSTALL_DIR=%HOME%
 set SCRIPT_DIR=%HOME%
 set TARGET_DIR=%INSTALL_DIR%yolo-ai-cmdbot\
