@@ -115,13 +115,12 @@ if __name__ == "__main__":
       print ("No user prompt specified.")
       sys.exit(-1)
  
-  
   # Load the correct prompt based on Shell and OS and append the user's prompt
   prompt = get_full_prompt(user_prompt, shell)
 
   # Make the first line also the system prompt
-  system_prompt = prompt[1]
-
+  system_prompt = prompt.split("\n")[0]
+  
   # Call the ChatGPT API
   response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
