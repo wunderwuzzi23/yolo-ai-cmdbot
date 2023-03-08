@@ -9,10 +9,11 @@ import platform
 import openai
 import sys
 import subprocess
+import dotenv 
+import distro
+
 from termcolor import colored
 from colorama import init
-
-import dotenv #Allow .env file to be used
 
 # Check if the user globally disabled the safety switch
 def get_yolo_safety_switch_config():
@@ -60,8 +61,7 @@ def get_os_friendly_name():
   os_name = platform.system()
   
   if os_name == "Linux":
-      dist_name = platform.freedesktop_os_release()["NAME"]
-      return "Linux/"+dist_name
+      return "Linux/"+distro.name(pretty=True)
   elif os_name == "Windows":
       return os_name
   elif os_name == "Darwin":
@@ -115,12 +115,14 @@ if __name__ == "__main__":
       print ("No user prompt specified.")
       sys.exit(-1)
  
+  
   # Load the correct prompt based on Shell and OS and append the user's prompt
   prompt = get_full_prompt(user_prompt, shell)
 
   # Make the first line also the system prompt
-  system_prompt = prompt.split("\n")[0]
-  
+  system_prompt = prompt[1]
+  #print(prompt)
+
   # Call the ChatGPT API
   response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
@@ -129,10 +131,7 @@ if __name__ == "__main__":
         {"role": "user", "content": prompt}
     ],
     temperature=0,
-    max_tokens=100,
-    # top_p=1,
-    # frequency_penalty=0.2,
-    # presence_penalty=0
+    max_tokens=500,
   )
 
 #print (response)
