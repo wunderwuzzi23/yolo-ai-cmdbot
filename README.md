@@ -70,6 +70,13 @@ There are two ways to configure the key:
 - You can either `export OPENAI_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `OPENAI_API_KEY="<yourkey>"` as a line
 - Create a file at `~/.openai.apikey` with the key in it
 
+## Windows
+
+On windows `export OPENAI_API_KEY=<yourkey>` will not work instead:
+- Run `$env:OPENAI_API_KEY="<yourkey>"` to set key for that terminal
+- Or, Run PowerShell as administrator and run `setx OPENAI_API_KEY "<yourkey>"`
+- Or, Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `<yourkey>`
+
 # Using yolo
 
 By default `yolo` will prompt the user before executing commands.
