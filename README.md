@@ -1,4 +1,8 @@
-# Install (Linux instructions)
+# Yolo Demo
+
+![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
+
+# Installation on Linux and macOS
 
 ```
 git clone https://github.com/wunderwuzzi23/yolo-ai-cmdbot
@@ -7,20 +11,24 @@ pip3 install -r requirements.txt
 chmod +x yolo.py
 alias yolo=$(pwd)/yolo.py
 alias computer=$(pwd)/yolo.py #optional
+
+yolo show me some funny unicode characters
 ```
+
+## OpenAI API Key configuration
+
+There are two ways to configure the key on Linux and macOS:
+- You can either `export OPENAI_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `OPENAI_API_KEY="<yourkey>"` as a line
+- Create a file at `~/.openai.apikey` with the key in it
 
 ## Aliases
 
-To set the alias on each login, add them to your .bashrc or .bash_aliases file.
+To set the alias, like `yolo` or `computer` on each login, add them to your .bashrc or .bash_aliases file. (zsh on macOS)
 
 ```
 echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases
 echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
 ```
-
-## Yolo in Action
-
-![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
 
 ## Installation script
 
@@ -29,61 +37,58 @@ Another option is to run `source install.sh` after cloning the repo. That does t
 2. Creates two aliases `yolo` and `computer` pointint to `~/yolo-ai-cmdbot/yolo.py`
 3. Adds the aliases to the `~/bash_aliases` file (only tested on Ubuntu)
 
-That's it. Now make sure you have an OpenAI API key set.
+That's it for Linux and macOS. Now make sure you have an OpenAI API key set.
 
-## Installation script (Windows)
 
-For windows you can run `.\install.bat` (or double-click) after cloning the repo. By default it does the following:
+# Windows Installation
+
+On Windows run `.\install.bat` (or double-click) after cloning the repo. By default it does the following:
 1. Copies the necessary files to `~\yolo-ai-cmdbot\`
 2. Creates a `yolo.bat` file in `~` that lets you run equivalent to `python.exe ~\yolo-ai-cmdbot\yolo.py`
 
-You will also have the option to:
+You also have the option to:
 1. Change the location where `yolo-ai-cmdbot\` and `yolo.bat` will be created
 2. Skip creating `yolo-ai-cmdbot\` and use the folder of the cloned repository instead.
 3. Create a `.openai.apikey` and/or `.yolo-safety-off` file in your `~` directory
 
-That's it. Now make sure you have an OpenAI API key set.
+That's it basically.
 
-# macOS 
+## OpenAI API Key Configuration on Windows
 
-On make OS (when using `zsh`) you can't end your instructions with a question mark (unless you put the question/instructions into a string 'whats the time?'). Hoever, yolo adds a question mark regardless if there is no . or ? at the end.
-
-# Windows
-
-Windows is less tested, it does work though and will use PowerShell.
-
-`python.exe yolo.py what is my username`
-
-If you use `install.bat` you should have a `yolo.bat` file in your `~` directory that lets you run the command like so:
-
-`.\yolo.bat what is my username`
-
-You can put the `yolo.bat` file into a $PATH directory (like `C:\Windows\System32`) to use in any directory like so:
-
-`yolo what is my username`
-
-Have fun.
-
-# OpenAI API Key configuration
-
-There are two ways to configure the key:
-- You can either `export OPENAI_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `OPENAI_API_KEY="<yourkey>"` as a line
-- Create a file at `~/.openai.apikey` with the key in it
-
-## Windows
-
-On windows `export OPENAI_API_KEY=<yourkey>` will not work instead:
+On Windows `export OPENAI_API_KEY=<yourkey>` will not work instead:
 - Run `$env:OPENAI_API_KEY="<yourkey>"` to set key for that terminal
 - Or, Run PowerShell as administrator and run `setx OPENAI_API_KEY "<yourkey>"`
 - Or, Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `<yourkey>`
 
-# Using yolo
+## Running yolo on Windows 
 
-By default `yolo` will prompt the user before executing commands.
+Windows is less tested, it does work though and will use PowerShell.
 
-## Disabling the safety switch!
+```
+python.exe yolo.py what is my username
+```
 
-To disable the default behavior and have yolo run commands right away when they come back from ChatGPT create a file named `~/.yolo-safety-off`
+That's it.
+
+## yolo.bat
+
+If you use `install.bat` you should have a `yolo.bat` file in your `~` directory that lets you run the command like so:
+
+```
+.\yolo.bat what is my username
+```
+
+You can put the `yolo.bat` file into a $PATH directory (like `C:\Windows\System32`) to use in any directory like so:
+
+```
+yolo what is my username
+```
+
+Have fun.
+
+# Disabling the safety switch! **Caution!**
+
+By default `yolo` will prompt the user before executing commands. To have yolo run commands right away when they come back from ChatGPT create a file named `~/.yolo-safety-off`. 
 
 A simple command to do that on Linux would be:
 
@@ -102,7 +107,7 @@ https://www.youtube.com/watch?v=g6rvHWpx_Go
 [![Watch the video](https://embracethered.com/blog/images/2023/yolo-thumbnail-small.png)](https://www.youtube.com/watch?v=g6rvHWpx_Go)
 
 
-## Examples
+# Examples
 
 Here are a couple of examples on how this utility can be used.
 
