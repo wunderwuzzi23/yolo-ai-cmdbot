@@ -61,11 +61,13 @@ def get_os_friendly_name():
   os_name = platform.system()
   
   if os_name == "Linux":
-      return "Linux/"+distro.name(pretty=True)
+    return "Linux/"+distro.name(pretty=True)
   elif os_name == "Windows":
-      return os_name
+    return os_name
   elif os_name == "Darwin":
-     return "Darwin/macOS"
+    return "Darwin/macOS"
+  else:
+    return os_name
 
 
 if __name__ == "__main__":
@@ -141,7 +143,8 @@ res_command = response.choices[0].message.content.strip()
 #Enable color output on Windows using colorama
 init() 
 
-if res_command.startswith("Sorry, try again") or res_command.startswith("I'm sorry"):
+prefixes = ("Sorry", "I'm sorry")
+if res_command.startswith(prefixes):
   print(colored("There was an issue: "+res_command, 'red'))
   sys.exit(-1)
 
