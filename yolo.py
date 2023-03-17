@@ -155,11 +155,11 @@ if res_command.count("```",2):
 
 print("Command: " + colored(res_command, 'blue'))
 if yolo_safety_switch == True or ask_flag == True:
-  print("Execute the command? Y/n ==> ", end = '')
+  print("Execute the command? Y/n (default Y) ==> ", end = '')
   yolo = input()
   print()
 
-if yolo == "Y" or yolo == "":
+if yolo.upper() == "Y" or yolo == "":
   if shell == "powershell.exe":
     subprocess.run([shell, "/c", res_command], shell=False)  
   else: 
