@@ -161,7 +161,7 @@ res_command = response.choices[0].message.content.strip()
 #Enable color output on Windows using colorama
 init() 
 
-prefixes = ("sorry", "i'm sorry", "the question is not clear")
+prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
 if res_command.lower().startswith(prefixes):
   print(colored("There was an issue: "+res_command, 'red'))
   sys.exit(-1)
