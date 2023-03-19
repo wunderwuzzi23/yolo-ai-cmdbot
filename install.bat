@@ -4,20 +4,20 @@ setlocal enabledelayedexpansion
 :: First check if `install.bat` (this) has needed files in same directory
 if not exist %~dp0\yolo.py ( echo `yolo.py` missing in %~dp0 cannot install & goto :choice_default_3 )
 if not exist %~dp0\prompt.txt ( echo `prompt.txt` missing in %~dp0 cannot install & goto :choice_default_3 ) 
+if not exist %~dp0\yolo.yaml ( echo `yolo.yaml` missing in %~dp0 cannot install & goto :choice_default_3 ) 
+
 
 :: Note: "~" or %HOME% is equivalent to "%HOMEDRIVE%%HOMEPATH%\" but the latter is set in VM environments (from what I can tell)
 :: INSTALL_DIR = Directory the "yolo-ai-cmdbot\" will go to.
 :: SCRIPT_DIR = Directory the "yolo.bat" script will go to.
 :: createDIR = Whether or not a seperate "yolo-ai-cmdbot\" directory will be made/used to hold "yolo.py" and "prompt.txt". 1=Yes, 2=Just_use_Repo (the folder this is in)
 :: createAPIKEY = Whether to create a ".openai.apikey" at %HOMEDRIVE%%HOMEPATH%\. 1=Yes, 2=No
-:: createSafetyOff = Whether to create a ".yolo-safety-off" at %HOMEDRIVE%%HOMEPATH%\. 1=Yes, 2=No
 
 :: Default values:
 set "INSTALL_DIR=%HOMEDRIVE%%HOMEPATH%\"
 set "SCRIPT_DIR=%HOMEDRIVE%%HOMEPATH%\"
 set /a "createDIR=1"
 set /a "createAPIKEY=2"
-set /a "createSafetyOff=2"
 set "installing=1"
 
 :: Set Variables To User Defined If Needed 
@@ -67,6 +67,8 @@ if /i %createDIR%==1 ( call :install_yolo_directory )
 if /i %createDIR%==2 ( call :install_yolo_repository )
 
 ::Make sure safety is on when default installing 
+::Note: when upgrading from v0.1 to v0.2 it will delete the file. 
+::With v.0.2 the safety switch moved to the config file yolo.yaml
 if /i !installing!==1 ( del %HOMEDRIVE%%HOMEPATH%\.yolo-safety-off )
 
 :choice_default_4
@@ -123,13 +125,8 @@ cls
 call :print_apikey
 choice /n /c YN /m "Let me know which option you want to select: "
 set /a createAPIKEY=!ERRORLEVEL!
-cls
-call :print_safetyoff
-choice /n /c YN /m "Let me know which option you want to select: "
-set /a createSafetyOff=!ERRORLEVEL!
 
 if /i !createAPIKEY!==1 ( call :create_openai_apikey )
-if /i !createSafetyOff!==1 ( call :create_safety_off )
 goto :EOF
 
 :: Creates a directory to hold yolo.py and prompt.txt
@@ -139,6 +136,7 @@ echo Installing to !TARGET_DIR!
 mkdir !TARGET_DIR!
 copy  %~dp0\yolo.py !TARGET_DIR!
 copy  %~dp0\prompt.txt !TARGET_DIR!
+copy  %~dp0\yolo.yaml !TARGET_DIR!
 goto :EOF
 
 :: Create yolo.bat and input code linking to created directory
@@ -163,13 +161,6 @@ if not exist %~dp0\yolo.py ( echo Not Found: Aborting "create_yolo_bat_from_repo
     echo @echo off>!SCRIPT_DIR!\"yolo.bat"
     echo python.exe %~dp0\yolo.py %%*>>!SCRIPT_DIR!\"yolo.bat"
 )
-goto :EOF
-
-:: Creates the safety off file and puts it in ~ for you
-:create_safety_off
-echo Yolo Safety Off:
-echo Creating `.yolo-safety-off` in `%HOMEDRIVE%%HOMEPATH%\`
-copy nul %HOMEDRIVE%%HOMEPATH%\.yolo-safety-off
 goto :EOF
 
 :: Creates the .openai.apikey if it doesn't already exists (otherwise, does nothing)
@@ -267,38 +258,17 @@ echo If you do not understand what this means, select [N]
 echo.
 goto :EOF
 
-:: Prints a prompt for `.yolo-safety-off`
-:print_safetyoff
-echo.
-echo Installation `.yolo-safety-off` File Options:
-echo.
-echo This file will remove the confirmation message before running commands given by yolo
-echo You can still have a confirmation message appear using the `-a` switch before your prompt:
-echo `.\yolo.bat -a [Enter Prompt Here]`
-echo.
-echo [Y] Yes, Create a `.yolo-safety-off` if it does not exist at `%HOMEDRIVE%%HOMEPATH%\`
-echo [N] No, Will skip this.
-echo.
-echo You probably want to use [N], this may cause you to delete/modify files you did not want to.
-echo If you do not understand what this means, select [N]
-echo.
-goto :EOF
-
 :: Prints a "Finished Installing" and usage message after installing
 :print_guide
 echo.
-echo Finished Installing Yolo...
+echo Finished Installing Yolo.
 echo.
-echo You can run commands by being in the same directory as your `yolo.bat` file ( It is in `!SCRIPT_DIR!` ) with the following command:
+echo Run commands by being in the same directory as your `yolo.bat` file ( It is in `!SCRIPT_DIR!` ):
 echo `.\yolo.bat [Enter Prompt Here]`
-echo You can also put your `yolo.bat` file into a $PATH directory and run it like so, instead:
+echo. 
+echo Or, put the `yolo.bat` file into a $PATH directory and run it like so, instead:
 echo `yolo [Enter Prompt Here]`
-echo You can use the `-a` switch to make sure yolo asks you before running the returned command:
-echo `yolo -a [Enter Prompt Here]`
-echo Make sure to do this when deleting/modifying files/folders with safety off.
 echo.
-echo You should have `C:\Windows\System32` as a path in the $PATH environment variable but you can write the command `echo $env:PATH` into PowerShell for more options...
-set /p "wait=Press [Enter] for more:"
 if /i !createDIR!==1 ( call :print_bat_warning_directory )
 if /i !createDIR!==2 ( call :print_bat_warning_repository )
 set /p "wait=Press [Enter] for more:"
@@ -326,16 +296,20 @@ goto :EOF
 
 :print_apikey_guide
 echo.
-echo Api Key:
+echo API Key:
 echo.
-echo You will need to provide your openai apikey to use yolo.
-echo You can get this at `https://platform.openai.com/account/api-keys` after logging in.
-echo - You can then put the apikey straight into a `.openai.apikey` file in `%HOMEDRIVE%%HOMEPATH%\` 
-echo (You can run this `install.bat` again and select `O`ptional Files to create a `.openai.apikey` file for you)
-echo -You can paste `OPENAI_API_KEY="[yourkey]"` into a `.env` file that should be in the folder yolo is installed in currently.
+echo You need to provide your OpenAI API key to use yolo.
+echo.
+echo You can get a key from `https://platform.openai.com/account/api-keys` after logging in.
+echo There are multiple options for providing the key:
+echo (1) You can put the key into a `.openai.apikey` file in `%HOMEDRIVE%%HOMEPATH%\` 
+echo Run `install.bat` again and select `O`ptional Files to create a `.openai.apikey` file
+echo (2) You can paste `OPENAI_API_KEY="[yourkey]"` into a `.env` file that should be in the folder yolo is installed in currently.
 if /i !createDIR!==1 ( echo `.env` should be in: !TARGET_DIR! )
 if /i !createDIR!==2 ( echo `.env` should be in: %~dp0 )
-echo -You can run `$env:OPENAI_API_KEY="[yourkey]"` in your terminal before using yolo in that terminal
-echo -If you run PowerShell as administrator you can then run `setx OPENAI_API_KEY "[yourkey]"` to permanently and use yolo in any terminal (you may need to reopen the terminal once).
-echo -Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `[yourkey]`
+echo (3) You can run `$env:OPENAI_API_KEY="[yourkey]"` in your terminal before using yolo in that terminal
+echo   -If you run PowerShell as administrator you can then run `setx OPENAI_API_KEY "[yourkey]"` to permanently and use yolo in any terminal (you may need to reopen the terminal once).
+echo   -Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `[yourkey]`
+echo (4) Another option is to put the API key in the yolo.yaml configuration file (since v.0.2)
+echo.
 goto :EOF
