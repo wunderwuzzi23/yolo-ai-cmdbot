@@ -1,5 +1,6 @@
 openai==0.27
 termcolor==2.2.0
-colorama
-python-dotenv
-distro
+colorama==0.4.4
+python-dotenv==1.0.0
+distro==1.7.0
+PyYAML==5.4.1
