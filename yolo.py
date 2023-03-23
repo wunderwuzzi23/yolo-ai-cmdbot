@@ -12,6 +12,7 @@ import subprocess
 import dotenv 
 import distro
 import yaml
+import pyperclip
 
 from termcolor import colored
 from colorama import init
@@ -131,13 +132,14 @@ if __name__ == "__main__":
   arguments = sys.argv[command_start_idx:]
   user_prompt = " ".join(arguments)
 
+def call_open_ai(query):
   # do we have a prompt from the user?
-  if user_prompt == "":
+  if query == "":
       print ("No user prompt specified.")
       sys.exit(-1)
  
   # Load the correct prompt based on Shell and OS and append the user's prompt
-  prompt = get_full_prompt(user_prompt, shell)
+  prompt = get_full_prompt(query, shell)
 
   # Make the first line also the system prompt
   system_prompt = prompt[1]
@@ -153,33 +155,58 @@ if __name__ == "__main__":
     temperature=config["temperature"],
     max_tokens=config["max_tokens"],
   )
+ 
+  return response.choices[0].message.content.strip()
 
-#print (response)
-
-res_command = response.choices[0].message.content.strip()
 
 #Enable color output on Windows using colorama
 init() 
 
-prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
-if res_command.lower().startswith(prefixes):
-  print(colored("There was an issue: "+res_command, 'red'))
-  sys.exit(-1)
+def check_for_issue(response):
+  prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
+  if response.lower().startswith(prefixes):
+    print(colored("There was an issue: "+response, 'red'))
+    sys.exit(-1)
 
-# odd corner case, sometimes ChatCompletion returns markdown
-if res_command.count("```",2):
-  print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+res_command)
-  sys.exit(-1)
+def check_for_markdown(response):
+  # odd corner case, sometimes ChatCompletion returns markdown
+  if response.count("```",2):
+    print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+response)
+    sys.exit(-1)
 
-print("Command: " + colored(res_command, 'blue'))
-if config["safety"] != "off" or ask_flag == True:
-  print("Execute the command? [Y/n] ==> ", end = '')
-  yolo = input()
-  print()
+def prompt_user_input(response):
+  print("Command: " + colored(response, 'blue'))
+  if config["safety"] != "off" or ask_flag == True:
+    print("Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> ", end = '')
+    user_input = input()
+    return user_input 
 
-if yolo.upper() == "Y" or yolo == "":
-  if shell == "powershell.exe":
-    subprocess.run([shell, "/c", res_command], shell=False)  
-  else: 
-    # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
-    subprocess.run([shell, "-c", res_command], shell=False)
+def evaluate_input(user_input, command):
+  if user_input.upper() == "Y" or user_input == "":
+    if shell == "powershell.exe":
+      subprocess.run([shell, "/c", command], shell=False)  
+    else: 
+      # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
+      subprocess.run([shell, "-c", command], shell=False)
+  
+  if user_input.upper() == "M":
+    print("Modify prompt: ", end = '')
+    modded_query = input()
+    modded_response = call_open_ai(modded_query)
+    print(modded_response)
+    check_for_issue(modded_response)
+    check_for_markdown(modded_response)
+    modded_user_input = prompt_user_input(modded_response)
+    print()
+    evaluate_input(modded_user_input, modded_response)
+  
+  if user_input.upper() == "C":
+    pyperclip.copy(command) 
+    print("Copied command to clipboard.")
+
+res_command = call_open_ai(user_prompt) 
+check_for_issue(res_command)
+check_for_markdown(res_command)
+user_iput = prompt_user_input(res_command)
+print()
+evaluate_input(user_iput, res_command)
