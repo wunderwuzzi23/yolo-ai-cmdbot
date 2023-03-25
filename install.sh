@@ -19,12 +19,12 @@ alias computer=$TARGET_FULLPATH
 # Depends on your shell
 if [[ "$SHELL" == "/bin/bash" ]]; then
   echo "- Adding aliases to ~/.bash_aliases"
-  echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases 
-  echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
+  [ "$(grep '^alias yolo=' ~/.bash_aliases)" ]     && echo "alias yolo already created"     || echo "alias yolo=$TARGET_FULLPATH"     >> ~/.bash_aliases 
+  [ "$(grep '^alias computer=' ~/.bash_aliases)" ] && echo "alias computer already created" || echo "alias computer=$TARGET_FULLPATH" >> ~/.bash_aliases
 elif [[ "$SHELL" == "/bin/zsh" ]]; then
   echo "- Adding aliases to ~/.zshrc"
-  echo "alias yolo=$TARGET_FULLPATH"     >> ~/.zshrc 
-  echo "alias computer=$TARGET_FULLPATH" >> ~/.zshrc
+  [ "$(grep '^alias yolo=' ~/.zshrc)" ]     && echo "alias yolo already created"     || echo "alias yolo=$TARGET_FULLPATH"     >> ~/.zshrc 
+  [ "$(grep '^alias computer=' ~/.zshrc)" ] && echo "alias computer already created" || echo "alias computer=$TARGET_FULLPATH" >> ~/.zshrc
 else
   echo "Note: Shell was not bash or zsh."
   echo "      Consider configuring aliases (like yolo and/or computer) manually by adding them to your login script, e.g:"
