@@ -174,10 +174,18 @@ def check_for_markdown(response):
     print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+response)
     sys.exit(-1)
 
+def missing_posix_display():
+  display = subprocess.check_output("echo $DISPLAY", shell=True)
+  return display == b'\n'
+
+
 def prompt_user_input(response):
   print("Command: " + colored(response, 'blue'))
   if config["safety"] != "off" or ask_flag == True:
-    print("Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> ", end = '')
+    prompt_text = "Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> "
+    if os.name == "posix" and missing_posix_display():
+        prompt_text =  "Execute command? [Y]es [n]o [m]odify ==> "
+    print(prompt_text, end = '')
     user_input = input()
     return user_input 
 
@@ -193,7 +201,6 @@ def evaluate_input(user_input, command):
     print("Modify prompt: ", end = '')
     modded_query = input()
     modded_response = call_open_ai(modded_query)
-    print(modded_response)
     check_for_issue(modded_response)
     check_for_markdown(modded_response)
     modded_user_input = prompt_user_input(modded_response)
@@ -201,8 +208,10 @@ def evaluate_input(user_input, command):
     evaluate_input(modded_user_input, modded_response)
   
   if user_input.upper() == "C":
-    pyperclip.copy(command) 
-    print("Copied command to clipboard.")
+      if os.name == "posix" and missing_posix_display():
+        return
+      pyperclip.copy(command) 
+      print("Copied command to clipboard.")
 
 res_command = call_open_ai(user_prompt) 
 check_for_issue(res_command)
