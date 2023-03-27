@@ -4,3 +4,4 @@ colorama==0.4.4
 python-dotenv==1.0.0
 distro==1.7.0
 PyYAML==5.4.1
+pyperclip==1.8.2
