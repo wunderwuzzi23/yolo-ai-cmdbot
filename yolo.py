@@ -39,13 +39,13 @@ Current configuration per yolo.yaml:
 * Safety       : {"on" if config["safety"] else "off"}
 """
 
-if len(sys.argv) < 2:
-  print(usage)
-  sys.exit(-1)
-
 if sys.argv[1] == "-a":
   ask_flag = True
   sys.argv.pop(1)
+
+if len(sys.argv) < 2:
+  print(usage)
+  sys.exit(-1)
 
 arguments = sys.argv[1:]
 user_prompt = " ".join(arguments)
