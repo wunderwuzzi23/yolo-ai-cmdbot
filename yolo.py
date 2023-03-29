@@ -38,9 +38,6 @@ if len(sys.argv) < 2:
 user_prompt = " ".join(sys.argv[1:])
 colorama.init()
 
-def can_copy():
-  return not os.name == "posix" or not subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
-
 while True:
   if user_prompt == "":
       print ("No user prompt specified.")
@@ -77,8 +74,13 @@ while True:
     sys.exit(-1)
   
   print("Command: " + termcolor.colored(command, 'blue'))
+  try:
+    pyperclip.copy(command)
+    print("Copied command to clipboard.")
+  except:
+    pass
   if config["safety"] != "off":
-    print(f"Execute command? [Y]es [n]o [m]odify{' [c]opy to clipboard' if can_copy() else ''} ==> ", end = '')
+    print(f"Execute command? [Y]es [n]o [m]odify ==> ", end = '')
     user_input = input()
   print()
   if user_input.upper() == "Y" or user_input == "":
@@ -89,8 +91,4 @@ while True:
     print("Modify prompt: ", end = '')
     user_query = input()
     continue
-  
-  if user_input.upper() == "C" and can_copy():
-    pyperclip.copy(command)
-    print("Copied command to clipboard.")
   break
