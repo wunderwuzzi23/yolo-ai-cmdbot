@@ -87,7 +87,7 @@ init()
 def can_copy():
   return not os.name == "posix" or not subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
 
-def loop(user_prompt):
+while True:
   # do we have a prompt from the user?
   if user_prompt == "":
       print ("No user prompt specified.")
@@ -148,9 +148,9 @@ def loop(user_prompt):
   if user_input.upper() == "M":
     print("Modify prompt: ", end = '')
     user_query = input()
+    continue
   
   if user_input.upper() == "C" and can_copy():
     pyperclip.copy(command)
     print("Copied command to clipboard.")
-
-loop(user_prompt)
+  break
