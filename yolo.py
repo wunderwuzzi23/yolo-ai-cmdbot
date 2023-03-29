@@ -27,11 +27,7 @@ Current configuration per yolo.yaml:
 * Model        : {config["model"]}
 * Temperature  : {config["temperature"]}
 * Max. Tokens  : {config["max_tokens"]}
-* Safety       : {"on" if config["safety"] else "off"}
 """
-if sys.argv[1] == "-a":
-  config["safety"] = "on"
-  sys.argv.pop(1)
 if len(sys.argv) < 2:
   print(usage)
   sys.exit(-1)
@@ -79,9 +75,8 @@ while True:
     print("Copied command to clipboard.")
   except:
     pass
-  if config["safety"] != "off":
-    print(f"Execute command? [Y]es [n]o [m]odify ==> ", end = '')
-    user_input = input()
+  print(f"Execute command? [Y]es [n]o [m]odify ==> ", end = '')
+  user_input = input()
   print()
   if user_input.upper() == "Y" or user_input == "":
     # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not

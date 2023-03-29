@@ -2,8 +2,5 @@ model: gpt-3.5-turbo  # If you have access to gpt-4 API already, you can update 
 temperature: 0
 max_tokens: 500
 
-# Safety: If set to False, commands returned from the AI will be run *without* prompting the user.
-safety: True
-
 # Open AI API Key (optional): The key can aso be provided via environment variable (OPENAI_API_KEY), .env, or ~/.openai.apikey file
 openai_api_key:
