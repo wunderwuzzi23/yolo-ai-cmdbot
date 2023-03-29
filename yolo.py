@@ -183,7 +183,12 @@ def prompt_user_input(response):
     print(f"Execute command? [Y]es [n]o [m]odify{' [c]opy to clipboard' if can_copy() else ''} ==> ", end = '')
     return input() 
 
-def evaluate_input(user_input, command):
+def loop(user_prompt):
+  command = call_open_ai(user_prompt) 
+  check_for_issue(command)
+  check_for_markdown(command)
+  user_input = prompt_user_input(command)
+  print()
   if user_input.upper() == "Y" or user_input == "":
     # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
     subprocess.run([shell, "/c" if shell == "powershell.exe" else "-c", command], shell=False)
@@ -191,20 +196,10 @@ def evaluate_input(user_input, command):
   if user_input.upper() == "M":
     print("Modify prompt: ", end = '')
     modded_query = input()
-    modded_response = call_open_ai(modded_query)
-    check_for_issue(modded_response)
-    check_for_markdown(modded_response)
-    modded_user_input = prompt_user_input(modded_response)
-    print()
-    evaluate_input(modded_user_input, modded_response)
+    loop(modded_query)
   
   if user_input.upper() == "C" and can_copy():
     pyperclip.copy(command)
     print("Copied command to clipboard.")
 
-res_command = call_open_ai(user_prompt) 
-check_for_issue(res_command)
-check_for_markdown(res_command)
-user_iput = prompt_user_input(res_command)
-print()
-evaluate_input(user_iput, res_command)
+loop(user_prompt)
