@@ -174,16 +174,14 @@ def check_for_markdown(response):
     print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+response)
     sys.exit(-1)
 
-def missing_posix_display():
-  display = subprocess.check_output("echo $DISPLAY", shell=True)
-  return display == b'\n'
-
+def cannot_copy():
+  return os.name == "posix" and subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
 
 def prompt_user_input(response):
   print("Command: " + colored(response, 'blue'))
   if config["safety"] != "off" or ask_flag == True:
     prompt_text = "Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> "
-    if os.name == "posix" and missing_posix_display():
+    if cannot_copy():
         prompt_text =  "Execute command? [Y]es [n]o [m]odify ==> "
     print(prompt_text, end = '')
     user_input = input()
@@ -191,11 +189,8 @@ def prompt_user_input(response):
 
 def evaluate_input(user_input, command):
   if user_input.upper() == "Y" or user_input == "":
-    if shell == "powershell.exe":
-      subprocess.run([shell, "/c", command], shell=False)  
-    else: 
-      # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
-      subprocess.run([shell, "-c", command], shell=False)
+    # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
+    subprocess.run([shell, "/c" if shell == "powershell.exe" else "-c", command], shell=False)
   
   if user_input.upper() == "M":
     print("Modify prompt: ", end = '')
@@ -208,7 +203,7 @@ def evaluate_input(user_input, command):
     evaluate_input(modded_user_input, modded_response)
   
   if user_input.upper() == "C":
-      if os.name == "posix" and missing_posix_display():
+      if cannot_copy():
         return
       pyperclip.copy(command) 
       print("Copied command to clipboard.")
