@@ -4,18 +4,7 @@
 # Copyright (c) 2023 wunderwuzzi23
 # Greetings from Seattle! 
 
-import os
-import platform
-import openai
-import sys
-import subprocess
-import dotenv 
-import distro
-import yaml
-import pyperclip
-
-from termcolor import colored
-from colorama import init
+import os, platform, openai, sys, subprocess, dotenv, distro, yaml, pyperclip, termcolor, colorama
 
 yolo_path = os.path.abspath(__file__)
 prompt_path = os.path.dirname(yolo_path)
@@ -63,7 +52,7 @@ if sys.argv[1] == "-a":
 arguments = sys.argv[command_start_idx:]
 user_prompt = " ".join(arguments)
 
-init()
+colorama.init()
 
 def can_copy():
   return not os.name == "posix" or not subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
@@ -100,14 +89,14 @@ while True:
 
   prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
   if command.lower().startswith(prefixes):
-    print(colored("There was an issue: "+command, 'red'))
+    print(termcolor.colored("There was an issue: "+command, 'red'))
     sys.exit(-1)
   
   if command.count("```",2):
-    print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+command)
+    print(termcolor.colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+command)
     sys.exit(-1)
   
-  print("Command: " + colored(command, 'blue'))
+  print("Command: " + termcolor.colored(command, 'blue'))
   if config["safety"] != "off" or ask_flag == True:
     print(f"Execute command? [Y]es [n]o [m]odify{' [c]opy to clipboard' if can_copy() else ''} ==> ", end = '')
     user_input = input()
