@@ -6,26 +6,18 @@
 
 import os, platform, openai, sys, subprocess, dotenv, distro, yaml, pyperclip, termcolor, colorama
 
-yolo_path = os.path.abspath(__file__)
-prompt_path = os.path.dirname(yolo_path)
-
-config_file = os.path.join(prompt_path, "yolo.yaml")
-with open(config_file, 'r') as file:
+prompt_path = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(prompt_path, "yolo.yaml"), 'r') as file:
   config = yaml.safe_load(file)
 
 dotenv.load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
 if not openai.api_key:  #If statement to avoid "invalid filepath" error
-  home_path = os.path.expanduser("~")    
-  openai.api_key_path = os.path.join(home_path,".openai.apikey")
-
+  openai.api_key_path = os.path.join(os.path.expanduser("~"),".openai.apikey")
 if not openai.api_key:  
   openai.api_key = config["openai_api_key"]
 
 shell = os.environ.get("SHELL", "powershell.exe")
-yolo = ""                  # user's answer to safety switch (-a) question y/n
-
 usage = f"""Yolo v0.2 - by @wunderwuzzi23
 
 Usage: yolo [-a] list the current directory information
@@ -37,18 +29,13 @@ Current configuration per yolo.yaml:
 * Max. Tokens  : {config["max_tokens"]}
 * Safety       : {"on" if config["safety"] else "off"}
 """
-
 if sys.argv[1] == "-a":
   config["safety"] = "on"
   sys.argv.pop(1)
-
 if len(sys.argv) < 2:
   print(usage)
   sys.exit(-1)
-
-arguments = sys.argv[1:]
-user_prompt = " ".join(arguments)
-
+user_prompt = " ".join(sys.argv[1:])
 colorama.init()
 
 def can_copy():
@@ -65,15 +52,13 @@ while True:
   elif os_name == "Darwin":
     os_name += "/macOS"
   
-  yolo_path = os.path.abspath(__file__)
-  prompt_path = os.path.dirname(yolo_path)
   prompt_file = os.path.join(prompt_path, "prompt.txt")
   system_prompt = open(prompt_file,"r").read().replace("{shell}", shell).replace("{os}", os_name)
   
   if user_prompt[-1:] != "?" and user_prompt[-1:] != ".":
     user_prompt+="?"
 
-  response = openai.ChatCompletion.create(
+  command = openai.ChatCompletion.create(
     model=config["model"],
     messages=[
         {"role": "system", "content": system_prompt},
@@ -81,11 +66,9 @@ while True:
     ],
     temperature=config["temperature"],
     max_tokens=config["max_tokens"],
-  )
-  command = response.choices[0].message.content.strip()
+  ).choices[0].message.content.strip()
 
-  prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
-  if command.lower().startswith(prefixes):
+  if command.lower().startswith(("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")):
     print(termcolor.colored("There was an issue: "+command, 'red'))
     sys.exit(-1)
   
