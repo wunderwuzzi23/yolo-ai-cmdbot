@@ -52,24 +52,21 @@ command_start_idx  = 1     # Question starts at which argv index?
 ask_flag = False           # safety switch -a command line argument
 yolo = ""                  # user's answer to safety switch (-a) question y/n
 
+usage = f"""Yolo v0.2 - by @wunderwuzzi23
+
+Usage: yolo [-a] list the current directory information
+Argument: -a: Prompt the user before running the command (only useful when safety is off)
+
+Current configuration per yolo.yaml:
+* Model        : {config["model"]}
+* Temperature  : {config["temperature"]}
+* Max. Tokens  : {config["max_tokens"]}
+* Safety       : {"on" if config["safety"] else "off"}
+"""
+
 # Parse arguments and make sure we have at least a single word
 if len(sys.argv) < 2:
-  print("Yolo v0.2 - by @wunderwuzzi23")
-  print()
-  print("Usage: yolo [-a] list the current directory information")
-  print("Argument: -a: Prompt the user before running the command (only useful when safety is off)")
-  print()
-
-  yolo_safety_switch = "on"
-
-  if config["safety"] != True:
-    yolo_safety_switch = "off"
-  
-  print("Current configuration per yolo.yaml:")
-  print("* Model        : " + str(config["model"]))
-  print("* Temperature  : " + str(config["temperature"]))
-  print("* Max. Tokens  : " + str(config["max_tokens"]))
-  print("* Safety       : " + yolo_safety_switch)
+  print(usage)
   sys.exit(-1)
 
 # Safety switch via argument -a (local override of global setting)
@@ -150,8 +147,7 @@ def loop(user_prompt):
   
   if user_input.upper() == "M":
     print("Modify prompt: ", end = '')
-    modded_query = input()
-    loop(modded_query)
+    user_query = input()
   
   if user_input.upper() == "C" and can_copy():
     pyperclip.copy(command)
