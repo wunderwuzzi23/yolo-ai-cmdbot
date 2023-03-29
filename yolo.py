@@ -16,7 +16,7 @@ with open(os.path.join( os.path.dirname(os.path.abspath(__file__)), "prompt.txt"
 
 blather = print if len(sys.argv) == 1 else lambda *args, **kwargs: print(*args[1:], **kwargs)
 try:
-  blather("Describe a shell command, or Ctrl-C to exit.", "==> ", end = '')
+  blather("Describe a shell command, or Ctrl-C to exit. ==> ", end = '')
   query = input() if len(sys.argv) == 1 else " ".join(sys.argv[1:])
   while True:
     messages.append({"role": "user", "content": query})
