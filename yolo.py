@@ -103,34 +103,32 @@ def set_api_key():
   if not openai.api_key:  
     openai.api_key = config["openai_api_key"]
 
-if __name__ == "__main__":
+config = read_config()
+set_api_key()
 
-  config = read_config()
-  set_api_key()
+# Unix based SHELL (/bin/bash, /bin/zsh), otherwise assuming it's Windows
+shell = os.environ.get("SHELL", "powershell.exe") 
 
-  # Unix based SHELL (/bin/bash, /bin/zsh), otherwise assuming it's Windows
-  shell = os.environ.get("SHELL", "powershell.exe") 
+command_start_idx  = 1     # Question starts at which argv index?
+ask_flag = False           # safety switch -a command line argument
+yolo = ""                  # user's answer to safety switch (-a) question y/n
 
-  command_start_idx  = 1     # Question starts at which argv index?
-  ask_flag = False           # safety switch -a command line argument
-  yolo = ""                  # user's answer to safety switch (-a) question y/n
+# Parse arguments and make sure we have at least a single word
+if len(sys.argv) < 2:
+  print_usage()
+  sys.exit(-1)
 
-  # Parse arguments and make sure we have at least a single word
-  if len(sys.argv) < 2:
-    print_usage()
-    sys.exit(-1)
+# Safety switch via argument -a (local override of global setting)
+# Force Y/n questions before running the command
+if sys.argv[1] == "-a":
+  ask_flag = True
+  command_start_idx = 2
 
-  # Safety switch via argument -a (local override of global setting)
-  # Force Y/n questions before running the command
-  if sys.argv[1] == "-a":
-    ask_flag = True
-    command_start_idx = 2
-
-  # To allow easy/natural use we don't require the input to be a 
-  # single string. So, the user can just type yolo what is my name?
-  # without having to put the question between ''
-  arguments = sys.argv[command_start_idx:]
-  user_prompt = " ".join(arguments)
+# To allow easy/natural use we don't require the input to be a 
+# single string. So, the user can just type yolo what is my name?
+# without having to put the question between ''
+arguments = sys.argv[command_start_idx:]
+user_prompt = " ".join(arguments)
 
 def call_open_ai(query):
   # do we have a prompt from the user?
