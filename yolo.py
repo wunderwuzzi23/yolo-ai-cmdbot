@@ -33,7 +33,7 @@ try:
     blather("Command: ", termcolor.colored(command, 'blue'))
     try:
       pyperclip.copy(command)
-      blather("Copied command to clipboard.")
+      blather("Copied command to clipboard.\n", end='')
     except:
       pass
     blather(f"Enter to execute, or continue conversing. ", "==> ", end = '')
