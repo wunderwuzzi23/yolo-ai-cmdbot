@@ -11,8 +11,7 @@ os_name = platform.system()
 if os_name == "Linux": os_name += distro.name(pretty=True)
 if os_name == "Darwin": os_name += "/macOS"
 shell = os.environ.get("SHELL", "powershell.exe")
-with open(os.path.join( os.path.dirname(os.path.abspath(__file__)), "prompt.txt"), 'r') as file:
-  messages = [{"role": "system", "content": file.read().replace("{shell}", shell).replace("{os}", os_name)}]
+messages = [{"role": "system", "content": f"Translate to one line of input for the shell {shell} on {os_name}."}]
 
 blather = print if len(sys.argv) == 1 else lambda *args, **kwargs: print(*args[1:], **kwargs)
 try:
