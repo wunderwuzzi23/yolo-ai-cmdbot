@@ -49,8 +49,8 @@ while True:
   elif os_name == "Darwin":
     os_name += "/macOS"
   
-  prompt_file = os.path.join(prompt_path, "prompt.txt")
-  system_prompt = open(prompt_file,"r").read().replace("{shell}", shell).replace("{os}", os_name)
+  with open(os.path.join(prompt_path, "prompt.txt"), 'r') as file:
+    system_prompt = file.read().replace("{shell}", shell).replace("{os}", os_name)
   
   if user_prompt[-1:] != "?" and user_prompt[-1:] != ".":
     user_prompt+="?"
