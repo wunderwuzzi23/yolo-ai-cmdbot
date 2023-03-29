@@ -66,11 +66,11 @@ while True:
   ).choices[0].message.content.strip()
 
   if command.lower().startswith(("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")):
-    print(termcolor.colored("There was an issue: "+command, 'red'))
+    print("There was an issue: "+command, file=sys.stderr)
     sys.exit(-1)
   
   if command.count("```",2):
-    print(termcolor.colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+command)
+    print("The proposed command contains markdown, so I did not execute the response directly: \n"+command, file=sys.stderr)
     sys.exit(-1)
   
   print("Command: " + termcolor.colored(command, 'blue'))
