@@ -24,13 +24,12 @@ if not openai.api_key:
   openai.api_key = config["openai_api_key"]
 
 shell = os.environ.get("SHELL", "powershell.exe")
-ask_flag = False           # safety switch -a command line argument
 yolo = ""                  # user's answer to safety switch (-a) question y/n
 
 usage = f"""Yolo v0.2 - by @wunderwuzzi23
 
 Usage: yolo [-a] list the current directory information
-Argument: -a: Prompt the user before running the command (only useful when safety is off)
+Argument: -a: turn safety on
 
 Current configuration per yolo.yaml:
 * Model        : {config["model"]}
@@ -40,7 +39,7 @@ Current configuration per yolo.yaml:
 """
 
 if sys.argv[1] == "-a":
-  ask_flag = True
+  config["safety"] = "on"
   sys.argv.pop(1)
 
 if len(sys.argv) < 2:
@@ -95,7 +94,7 @@ while True:
     sys.exit(-1)
   
   print("Command: " + termcolor.colored(command, 'blue'))
-  if config["safety"] != "off" or ask_flag == True:
+  if config["safety"] != "off":
     print(f"Execute command? [Y]es [n]o [m]odify{' [c]opy to clipboard' if can_copy() else ''} ==> ", end = '')
     user_input = input()
   print()
