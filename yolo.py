@@ -17,30 +17,43 @@ import pyperclip
 from termcolor import colored
 from colorama import init
 
-def read_config() -> any:
+## Find the executing directory (e.g. in case an alias is set)
+## So we can find the config file
+yolo_path = os.path.abspath(__file__)
+prompt_path = os.path.dirname(yolo_path)
 
-  ## Find the executing directory (e.g. in case an alias is set)
-  ## So we can find the config file
-  yolo_path = os.path.abspath(__file__)
-  prompt_path = os.path.dirname(yolo_path)
+config_file = os.path.join(prompt_path, "yolo.yaml")
+with open(config_file, 'r') as file:
+  config = yaml.safe_load(file)
 
-  config_file = os.path.join(prompt_path, "yolo.yaml")
-  with open(config_file, 'r') as file:
-    return yaml.safe_load(file)
+# Two options for the user to specify they openai api key.
+#1. Place a ".env" file in same directory as this with the line:
+#   OPENAI_API_KEY="<yourkey>"
+#   or do `export OPENAI_API_KEY=<yourkey>` before use
+dotenv.load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Construct the prompt
-def get_system_prompt(shell):
+#2. Place a ".openai.apikey" in the home directory that holds the line:
+#   <yourkey>
+#   Note: This options will likely be removed in the future
+if not openai.api_key:  #If statement to avoid "invalid filepath" error
+  home_path = os.path.expanduser("~")    
+  openai.api_key_path = os.path.join(home_path,".openai.apikey")
 
-  ## Find the executing directory (e.g. in case an alias is set)
-  ## So we can find the prompt.txt file
-  yolo_path = os.path.abspath(__file__)
-  prompt_path = os.path.dirname(yolo_path)
+#3. Final option is the key might be in the yolo.yaml config file
+#   openai_apikey: <yourkey>
+if not openai.api_key:  
+  openai.api_key = config["openai_api_key"]
 
-  ## Load the prompt and prep it
-  prompt_file = os.path.join(prompt_path, "prompt.txt")
-  return open(prompt_file,"r").read().replace("{shell}", shell).replace("{os}", get_os_friendly_name())
+# Unix based SHELL (/bin/bash, /bin/zsh), otherwise assuming it's Windows
+shell = os.environ.get("SHELL", "powershell.exe") 
 
-def print_usage():
+command_start_idx  = 1     # Question starts at which argv index?
+ask_flag = False           # safety switch -a command line argument
+yolo = ""                  # user's answer to safety switch (-a) question y/n
+
+# Parse arguments and make sure we have at least a single word
+if len(sys.argv) < 2:
   print("Yolo v0.2 - by @wunderwuzzi23")
   print()
   print("Usage: yolo [-a] list the current directory information")
@@ -57,56 +70,6 @@ def print_usage():
   print("* Temperature  : " + str(config["temperature"]))
   print("* Max. Tokens  : " + str(config["max_tokens"]))
   print("* Safety       : " + yolo_safety_switch)
-
-
-def get_os_friendly_name():
-  
-  # Get OS Name
-  os_name = platform.system()
-  
-  if os_name == "Linux":
-    return "Linux/"+distro.name(pretty=True)
-  elif os_name == "Windows":
-    return os_name
-  elif os_name == "Darwin":
-    return "Darwin/macOS"
-  else:
-    return os_name
-
-
-def set_api_key():
-  # Two options for the user to specify they openai api key.
-  #1. Place a ".env" file in same directory as this with the line:
-  #   OPENAI_API_KEY="<yourkey>"
-  #   or do `export OPENAI_API_KEY=<yourkey>` before use
-  dotenv.load_dotenv()
-  openai.api_key = os.getenv("OPENAI_API_KEY")
-  
-  #2. Place a ".openai.apikey" in the home directory that holds the line:
-  #   <yourkey>
-  #   Note: This options will likely be removed in the future
-  if not openai.api_key:  #If statement to avoid "invalid filepath" error
-    home_path = os.path.expanduser("~")    
-    openai.api_key_path = os.path.join(home_path,".openai.apikey")
-
-  #3. Final option is the key might be in the yolo.yaml config file
-  #   openai_apikey: <yourkey>
-  if not openai.api_key:  
-    openai.api_key = config["openai_api_key"]
-
-config = read_config()
-set_api_key()
-
-# Unix based SHELL (/bin/bash, /bin/zsh), otherwise assuming it's Windows
-shell = os.environ.get("SHELL", "powershell.exe") 
-
-command_start_idx  = 1     # Question starts at which argv index?
-ask_flag = False           # safety switch -a command line argument
-yolo = ""                  # user's answer to safety switch (-a) question y/n
-
-# Parse arguments and make sure we have at least a single word
-if len(sys.argv) < 2:
-  print_usage()
   sys.exit(-1)
 
 # Safety switch via argument -a (local override of global setting)
@@ -121,62 +84,65 @@ if sys.argv[1] == "-a":
 arguments = sys.argv[command_start_idx:]
 user_prompt = " ".join(arguments)
 
-def call_open_ai(query):
+#Enable color output on Windows using colorama
+init()
+
+def can_copy():
+  return not os.name == "posix" or not subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
+
+def loop(user_prompt):
   # do we have a prompt from the user?
-  if query == "":
+  if user_prompt == "":
       print ("No user prompt specified.")
       sys.exit(-1)
- 
+  
+  os_name = platform.system()
+  if os_name == "Linux":
+    os_name += distro.name(pretty=True)
+  elif os_name == "Darwin":
+    os_name += "/macOS"
+  
   # Load the correct system prompt based on Shell and OS
-  system_prompt = get_system_prompt(shell)
+  ## Find the executing directory (e.g. in case an alias is set)
+  ## So we can find the prompt.txt file
+  yolo_path = os.path.abspath(__file__)
+  prompt_path = os.path.dirname(yolo_path)
+
+  ## Load the prompt and prep it
+  prompt_file = os.path.join(prompt_path, "prompt.txt")
+  system_prompt = open(prompt_file,"r").read().replace("{shell}", shell).replace("{os}", os_name)
   
   # be nice and make it a question
-  if query[-1:] != "?" and query[-1:] != ".":
-    query+="?"
+  if user_prompt[-1:] != "?" and user_prompt[-1:] != ".":
+    user_prompt+="?"
 
   # Call the ChatGPT API
   response = openai.ChatCompletion.create(
     model=config["model"],
     messages=[
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": query}
+        {"role": "user", "content": user_prompt}
     ],
     temperature=config["temperature"],
     max_tokens=config["max_tokens"],
   )
  
-  return response.choices[0].message.content.strip()
+  command = response.choices[0].message.content.strip()
 
-
-#Enable color output on Windows using colorama
-init() 
-
-def check_for_issue(response):
   prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
-  if response.lower().startswith(prefixes):
-    print(colored("There was an issue: "+response, 'red'))
+  if command.lower().startswith(prefixes):
+    print(colored("There was an issue: "+command, 'red'))
     sys.exit(-1)
-
-def check_for_markdown(response):
+  
   # odd corner case, sometimes ChatCompletion returns markdown
-  if response.count("```",2):
-    print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+response)
+  if command.count("```",2):
+    print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+command)
     sys.exit(-1)
-
-def can_copy():
-  return not os.name == "posix" or not subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
-
-def prompt_user_input(response):
-  print("Command: " + colored(response, 'blue'))
+  
+  print("Command: " + colored(command, 'blue'))
   if config["safety"] != "off" or ask_flag == True:
     print(f"Execute command? [Y]es [n]o [m]odify{' [c]opy to clipboard' if can_copy() else ''} ==> ", end = '')
-    return input() 
-
-def loop(user_prompt):
-  command = call_open_ai(user_prompt) 
-  check_for_issue(command)
-  check_for_markdown(command)
-  user_input = prompt_user_input(command)
+    user_input = input()
   print()
   if user_input.upper() == "Y" or user_input == "":
     # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
