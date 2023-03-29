@@ -23,9 +23,7 @@ if not openai.api_key:  #If statement to avoid "invalid filepath" error
 if not openai.api_key:  
   openai.api_key = config["openai_api_key"]
 
-shell = os.environ.get("SHELL", "powershell.exe") 
-
-command_start_idx  = 1     # Question starts at which argv index?
+shell = os.environ.get("SHELL", "powershell.exe")
 ask_flag = False           # safety switch -a command line argument
 yolo = ""                  # user's answer to safety switch (-a) question y/n
 
@@ -47,9 +45,9 @@ if len(sys.argv) < 2:
 
 if sys.argv[1] == "-a":
   ask_flag = True
-  command_start_idx = 2
+  sys.argv.pop(1)
 
-arguments = sys.argv[command_start_idx:]
+arguments = sys.argv[1:]
 user_prompt = " ".join(arguments)
 
 colorama.init()
