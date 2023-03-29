@@ -23,11 +23,11 @@ try:
   query = input() if len(sys.argv) == 1 else " ".join(sys.argv[1:])
   while True:
     messages.append({"role": "user", "content": query})
-    command = openai.ChatCompletion.create(messages=messages, model=model, temperature=0, max_tokens=500).choices[0].message.content.strip()
-    messages.append({"role": "assistant", "content": command})
-    blather("Command: ", termcolor.colored(command, 'blue'))
+    message = openai.ChatCompletion.create(messages=messages, model=model, temperature=0, max_tokens=500).choices[0].message
+    messages.append(message)
+    blather("Command: ", termcolor.colored(message.content, 'blue'))
     try:
-      pyperclip.copy(command)
+      pyperclip.copy(message.content)
       blather("Copied command to clipboard.\n", end='')
     except:
       pass
@@ -35,7 +35,7 @@ try:
     query = input()
     if not query:
       # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
-      subprocess.run([shell, "/c" if shell == "powershell.exe" else "-c", command], shell=False)
+      subprocess.run([shell, "/c" if shell == "powershell.exe" else "-c", message.content], shell=False)
       print("==> ", end = '')
       query = input()
 except KeyboardInterrupt:
