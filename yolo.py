@@ -174,18 +174,14 @@ def check_for_markdown(response):
     print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+response)
     sys.exit(-1)
 
-def cannot_copy():
-  return os.name == "posix" and subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
+def can_copy():
+  return not os.name == "posix" or not subprocess.check_output("echo $DISPLAY", shell=True) == b'\n'
 
 def prompt_user_input(response):
   print("Command: " + colored(response, 'blue'))
   if config["safety"] != "off" or ask_flag == True:
-    prompt_text = "Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> "
-    if cannot_copy():
-        prompt_text =  "Execute command? [Y]es [n]o [m]odify ==> "
-    print(prompt_text, end = '')
-    user_input = input()
-    return user_input 
+    print(f"Execute command? [Y]es [n]o [m]odify{' [c]opy to clipboard' if can_copy() else ''} ==> ", end = '')
+    return input() 
 
 def evaluate_input(user_input, command):
   if user_input.upper() == "Y" or user_input == "":
@@ -202,11 +198,9 @@ def evaluate_input(user_input, command):
     print()
     evaluate_input(modded_user_input, modded_response)
   
-  if user_input.upper() == "C":
-      if cannot_copy():
-        return
-      pyperclip.copy(command) 
-      print("Copied command to clipboard.")
+  if user_input.upper() == "C" and can_copy():
+    pyperclip.copy(command)
+    print("Copied command to clipboard.")
 
 res_command = call_open_ai(user_prompt) 
 check_for_issue(res_command)
