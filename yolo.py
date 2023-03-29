@@ -29,7 +29,7 @@ def read_config() -> any:
     return yaml.safe_load(file)
 
 # Construct the prompt
-def get_full_prompt(user_prompt, shell):
+def get_system_prompt(shell):
 
   ## Find the executing directory (e.g. in case an alias is set)
   ## So we can find the prompt.txt file
@@ -38,16 +38,7 @@ def get_full_prompt(user_prompt, shell):
 
   ## Load the prompt and prep it
   prompt_file = os.path.join(prompt_path, "prompt.txt")
-  pre_prompt = open(prompt_file,"r").read()
-  pre_prompt = pre_prompt.replace("{shell}", shell)
-  pre_prompt = pre_prompt.replace("{os}", get_os_friendly_name())
-  prompt = pre_prompt + user_prompt
-  
-  # be nice and make it a question
-  if prompt[-1:] != "?" and prompt[-1:] != ".":
-    prompt+="?"
-
-  return prompt
+  return open(prompt_file,"r").read().replace("{shell}", shell).replace("{os}", get_os_friendly_name())
 
 def print_usage():
   print("Yolo v0.2 - by @wunderwuzzi23")
@@ -136,19 +127,19 @@ def call_open_ai(query):
       print ("No user prompt specified.")
       sys.exit(-1)
  
-  # Load the correct prompt based on Shell and OS and append the user's prompt
-  prompt = get_full_prompt(query, shell)
-
-  # Make the first line also the system prompt
-  system_prompt = prompt[1]
-  #print(prompt)
+  # Load the correct system prompt based on Shell and OS
+  system_prompt = get_system_prompt(shell)
+  
+  # be nice and make it a question
+  if query[-1:] != "?" and query[-1:] != ".":
+    query+="?"
 
   # Call the ChatGPT API
   response = openai.ChatCompletion.create(
     model=config["model"],
     messages=[
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": prompt}
+        {"role": "user", "content": query}
     ],
     temperature=config["temperature"],
     max_tokens=config["max_tokens"],
