@@ -56,18 +56,11 @@ def print_usage():
   print("Argument: -a: Prompt the user before running the command (only useful when safety is off)")
   print()
 
-
-  #Ensure safety switch has a correct value
-  yolo_safety_switch =  bool(config["safety"])
-
-  # if config["safety"] != True:
-  #   yolo_safety_switch = "off"
-  
   print("Current configuration per yolo.yaml:")
   print("* Model        : " + str(config["model"]))
   print("* Temperature  : " + str(config["temperature"]))
   print("* Max. Tokens  : " + str(config["max_tokens"]))
-  print("* Safety       : " + str(yolo_safety_switch))
+  print("* Safety       : " + str(bool(config["safety"])))
 
 
 def get_os_friendly_name():
