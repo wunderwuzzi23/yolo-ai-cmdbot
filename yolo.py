@@ -50,22 +50,24 @@ def get_full_prompt(user_prompt, shell):
   return prompt
 
 def print_usage():
-  print("Yolo v0.2 - by @wunderwuzzi23")
+  print("Yolo v0.2.1 - by @wunderwuzzi23")
   print()
   print("Usage: yolo [-a] list the current directory information")
   print("Argument: -a: Prompt the user before running the command (only useful when safety is off)")
   print()
 
-  yolo_safety_switch = "on"
 
-  if config["safety"] != True:
-    yolo_safety_switch = "off"
+  #Ensure safety switch has a correct value
+  yolo_safety_switch =  bool(config["safety"])
+
+  # if config["safety"] != True:
+  #   yolo_safety_switch = "off"
   
   print("Current configuration per yolo.yaml:")
   print("* Model        : " + str(config["model"]))
   print("* Temperature  : " + str(config["temperature"]))
   print("* Max. Tokens  : " + str(config["max_tokens"]))
-  print("* Safety       : " + yolo_safety_switch)
+  print("* Safety       : " + str(yolo_safety_switch))
 
 
 def get_os_friendly_name():
@@ -178,16 +180,20 @@ def missing_posix_display():
   display = subprocess.check_output("echo $DISPLAY", shell=True)
   return display == b'\n'
 
-
 def prompt_user_input(response):
   print("Command: " + colored(response, 'blue'))
-  if config["safety"] != "off" or ask_flag == True:
+  #print(config["safety"])
+
+  if bool(config["safety"]) == True or ask_flag == True:
     prompt_text = "Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> "
     if os.name == "posix" and missing_posix_display():
         prompt_text =  "Execute command? [Y]es [n]o [m]odify ==> "
     print(prompt_text, end = '')
     user_input = input()
     return user_input 
+  
+  if config["safety"] == False:
+     return "Y"
 
 def evaluate_input(user_input, command):
   if user_input.upper() == "Y" or user_input == "":
@@ -216,6 +222,6 @@ def evaluate_input(user_input, command):
 res_command = call_open_ai(user_prompt) 
 check_for_issue(res_command)
 check_for_markdown(res_command)
-user_iput = prompt_user_input(res_command)
+user_input = prompt_user_input(res_command)
 print()
-evaluate_input(user_iput, res_command)
+evaluate_input(user_input, res_command)
