@@ -1,4 +1,4 @@
-model: gpt-3.5-turbo  # If you have access to gpt-4 API already, you can update this.
+model: gpt-3.5-turbo  # If you have access update to gpt-4 or gpt-4-turbo-preview
 temperature: 0
 max_tokens: 500
 
