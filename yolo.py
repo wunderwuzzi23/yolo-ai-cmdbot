@@ -142,7 +142,7 @@ def missing_posix_display():
   return 'DISPLAY' not in os.environ or not os.environ["DISPLAY"]
 
 def prompt_user_for_action(config, ask_flag, response):
-  print("Command: " + colored(response, config["suggested_command_color"], attrs=['bold']))
+  print("Command: " + colored(response, config["suggested_command_color"]))
   
   modify_snippet = ""
   if bool(config["modify"]) == True:
