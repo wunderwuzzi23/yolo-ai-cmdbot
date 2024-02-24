@@ -49,7 +49,7 @@ def get_full_prompt(user_prompt, shell):
 
   return prompt
 
-def print_usage():
+def print_usage(config):
   print("Yolo v0.3 - by @wunderwuzzi23")
   print()
   print("Usage: yolo [-a] list the current directory information")
@@ -212,7 +212,7 @@ def main():
 
   # Parse arguments and make sure we have at least a single word
   if len(sys.argv) < 2:
-    print_usage()
+    print_usage(config)
     sys.exit(-1)
 
   # Safety switch via argument -a (local override of global setting)
