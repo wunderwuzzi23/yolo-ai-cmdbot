@@ -58,10 +58,12 @@ def print_usage(config):
   print()
 
   print("Current configuration per yolo.yaml:")
+  print("* API          : " + str(config["api"]))
   print("* Model        : " + str(config["model"]))
   print("* Temperature  : " + str(config["temperature"]))
   print("* Max. Tokens  : " + str(config["max_tokens"]))
   print("* Safety       : " + str(bool(config["safety"])))
+  print("* Command Color: " + str(config["suggested_command_color"]))
 
 
 def get_os_friendly_name():

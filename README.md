@@ -2,6 +2,15 @@
 
 ![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
 
+# Update Yolo v0.3 - Support for Azure OpenAI
+
+* Key changes are upgrades to the latest OpenAI libraries and support for Azure OpenAI. There is an `api` key in the `yolo.yaml` that can be set to `azure_openai` and then you can provide all the parameters accordingly in the yaml file as well (`api-version`, your `azure-endpoint`,...). The api key for azure is called `AZURE_OPENAI_API_KEY` by the way. It can be set via environment variable and config file.
+* It's now possible to change the color of the suggested command via config file
+* The "modify prompt" feature is now optional and can be toggled via config file.
+* Minor bug fixes (like copy to clipboard should work on macOS)
+
+Tested on macOS and Linux. Windows hopefully still works also.
+
 # Update Yolo v0.2 - Support for GPT-4 API
 
 This update introduces the `yolo.yaml` configuration file. In this file you can specify which OpenAI model you want to query, and other settings. The safety switch also moved into this configuration file.
@@ -9,16 +18,18 @@ This update introduces the `yolo.yaml` configuration file. In this file you can 
 For now the default model is still `gpt-3.5-turbo`, but you can update to `gpt-4` if you have gotten access already!
 
 ```
-Yolo v0.2 - by @wunderwuzzi23
+Yolo v0.3 - by @wunderwuzzi23
 
 Usage: yolo [-a] list the current directory information
 Argument: -a: Prompt the user before running the command (only useful when safety is off)
 
 Current configuration per yolo.yaml:
-* Model        : gpt-3.5-turbo
+* API          : openai
+* Model        : gpt-4-turbo-preview
 * Temperature  : 0
 * Max. Tokens  : 500
-* Safety       : on
+* Safety       : True
+* Command Color: blue
 ```
 
 Happy Hacking!
@@ -41,7 +52,13 @@ yolo show me some funny unicode characters
 There are three ways to configure the key on Linux and macOS:
 - You can either `export OPENAI_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `OPENAI_API_KEY="<yourkey>"` as a line
 - Create a file at `~/.openai.apikey` with the key in it
-- Add the key to the `yolo.yaml` configuration file
+- Set the key in the `yolo.yaml` configuration file
+
+### Azure OpenAI Key configuration
+There are three ways to configure the key on Linux and macOS:
+- You can either `export AZURE_OPENAI_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `AZURE_OPENAI_API_KEY="<yourkey>"` as a line
+- Create a file at `~/.azureopenai.apikey` with the key in it
+- Set the key in the `yolo.yaml` configuration file
 
 ## Aliases
 
@@ -82,6 +99,8 @@ On Windows `export OPENAI_API_KEY=<yourkey>` will not work instead:
 - Or, Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `<yourkey>`
 
 Optionally (since v.0.2), the key can also be stored in `yolo.yaml`.
+
+If you want to use Azure, the the key is called `AZURE_OPENAI_API_KEY`.
 
 ## Running yolo on Windows 
 
