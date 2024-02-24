@@ -112,7 +112,7 @@ def call_open_ai(client, query, config, shell):
   prompt = get_full_prompt(query, shell)
 
   # Make the first line also the system prompt
-  system_prompt = prompt[1]
+  system_prompt = prompt.split('\n')[0]
   #print(prompt)
 
   # Call the ChatGPT API
