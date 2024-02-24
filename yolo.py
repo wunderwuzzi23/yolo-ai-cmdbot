@@ -139,8 +139,7 @@ def check_for_markdown(response):
     sys.exit(-1)
 
 def missing_posix_display():
-  display = subprocess.check_output("echo $DISPLAY", shell=True)
-  return display == b'\n'
+  return 'DISPLAY' not in os.environ or not os.environ['DISPLAY']
 
 def prompt_user_for_action(config, ask_flag, response):
   print("Command: " + colored(response, 'blue'))
