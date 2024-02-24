@@ -39,4 +39,6 @@ echo "  - environment variable"
 echo "  - .env or an ~/.openai.apikey file or in"
 echo "  - yolo.yaml"
 echo
+echo "Yolo also supports Azure OpenAI now. Change settings in yolo.yaml accordingly."
+echo
 echo "Have fun!"

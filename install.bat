@@ -312,4 +312,6 @@ echo   -If you run PowerShell as administrator you can then run `setx OPENAI_API
 echo   -Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `[yourkey]`
 echo (4) Another option is to put the API key in the yolo.yaml configuration file (since v.0.2)
 echo.
+echo Yolo also supports Azure OpenAI now. Configure settings in yolo.yaml accordingly.
+echo.
 goto :EOF
