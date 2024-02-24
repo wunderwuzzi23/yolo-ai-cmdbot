@@ -142,7 +142,7 @@ def missing_posix_display():
   display = subprocess.check_output("echo $DISPLAY", shell=True)
   return display == b'\n'
 
-def prompt_user_input(config, ask_flag, response):
+def prompt_user_for_action(config, ask_flag, response):
   print("Command: " + colored(response, 'blue'))
   #print(config["safety"])
 
@@ -166,7 +166,11 @@ def prompt_user_input(config, ask_flag, response):
   if bool(config["safety"]) == False:
      return "Y"
 
-def evaluate_input(client, config, user_input, command, shell, ask_flag):
+def eval_user_intent_and_execute(client, config, user_input, command, shell, ask_flag):
+  if user_input.upper() not in ["", "Y", "C", "M"]:
+    print("No action taken.")
+    return
+  
   if user_input.upper() == "Y" or user_input == "":
     if shell == "powershell.exe":
       subprocess.run([shell, "/c", command], shell=False)  
@@ -180,9 +184,9 @@ def evaluate_input(client, config, user_input, command, shell, ask_flag):
     modded_response = call_open_ai(client, modded_query, config, shell)
     check_for_issue(modded_response)
     check_for_markdown(modded_response)
-    modded_user_input = prompt_user_input(config, ask_flag, modded_response)
+    user_intent = prompt_user_for_action(config, ask_flag, modded_response)
     print()
-    evaluate_input(client, config, modded_user_input, modded_response, shell, ask_flag)
+    eval_user_intent_and_execute(client, config, user_intent, modded_response, shell, ask_flag)
   
   if user_input.upper() == "C":
       if os.name == "posix" and missing_posix_display():
@@ -190,6 +194,7 @@ def evaluate_input(client, config, user_input, command, shell, ask_flag):
       pyperclip.copy(command) 
       print("Copied command to clipboard.")
 
+  
 
 def main():
   #Enable color output on Windows using colorama
@@ -223,17 +228,14 @@ def main():
   user_prompt = " ".join(arguments)
 
   ## core prompting loop logic
-  res_command = call_open_ai(client, user_prompt, config, shell) 
-  check_for_issue(res_command)
-  check_for_markdown(res_command)
-  user_input = prompt_user_input(config, ask_flag, res_command)
+  result = call_open_ai(client, user_prompt, config, shell) 
+  check_for_issue(result)
+  check_for_markdown(result)
+
+  users_intent = prompt_user_for_action(config, ask_flag, result)
   print()
-  evaluate_input(client, config, user_input, res_command, shell, ask_flag)
+  eval_user_intent_and_execute(client, config, users_intent, result, shell, ask_flag)
 
 
 if __name__ == "__main__":
   main()
-
-  
-
-
