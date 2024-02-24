@@ -7,6 +7,7 @@
 import os
 import platform
 from openai import OpenAI
+from openai import AzureOpenAI 
 import sys
 import subprocess
 import dotenv 
@@ -79,28 +80,31 @@ def get_os_friendly_name():
 
 
 def create_client(config):
-  
-  # Three options for the user to specify they openai api key.
-  #1. Place a ".env" file in same directory as this with the line:
-  #   OPENAI_API_KEY="<yourkey>"
-  #   or do `export OPENAI_API_KEY=<yourkey>` before use
+
   dotenv.load_dotenv()
-  api_key = os.getenv("OPENAI_API_KEY")
+
+  if config["api"] == "azure_openai": 
+    api_key = os.getenv("AZURE_OPENAI_API_KEY")
+    if not api_key:  api_key=config["azure_openai_api_key"]
+    if not api_key: 
+      home_path = os.path.expanduser("~")   
+      api_key=open(os.path.join(home_path,".azureopenai.apikey"), "r").readline().strip()
+
+    return AzureOpenAI(
+      azure_endpoint=config["azure_endpoint"], 
+      api_key=api_key, 
+      api_version=config["azure_api_version"]
+    )
   
-
-  #2. Place a ".openai.apikey" in the home directory that holds the line:
-  #   <yourkey>
-  #   Note: This options will likely be removed in the future
-  if not api_key:  #If statement to avoid "invalid filepath" error
-    home_path = os.path.expanduser("~")   
-    api_key=open(os.path.join(home_path,".openai.apikey"), "r").readline().strip()
-   
-  #3. Final option is the key might be in the yolo.yaml config file
-  #   openai_apikey: <yourkey>
-  if not api_key:  
-    api_key=config["openai_api_key"]
-
-  return OpenAI(api_key=api_key)
+  if config["api"] == "openai": 
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:  api_key=config["openai_api_key"]
+    if not api_key:  #If statement to avoid "invalid filepath" error
+      home_path = os.path.expanduser("~")   
+      api_key=open(os.path.join(home_path,".openai.apikey"), "r").readline().strip()
+  
+    api_key = api_key
+    return OpenAI(api_key=api_key) 
 
 def call_open_ai(client, query, config, shell):
   # do we have a prompt from the user?
@@ -115,14 +119,15 @@ def call_open_ai(client, query, config, shell):
   system_prompt = prompt.split('\n')[0]
   #print(prompt)
 
-  # Call the ChatGPT API
-  response = client.chat.completions.create(model=config["model"],
-  messages=[
-      {"role": "system", "content": system_prompt},
-      {"role": "user", "content": prompt}
-  ],
-  temperature=config["temperature"],
-  max_tokens=config["max_tokens"])
+  # Call the API
+  response = client.chat.completions.create(
+    model=config["model"],
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt}
+    ],
+    temperature=config["temperature"],
+    max_tokens=config["max_tokens"])
  
   return response.choices[0].message.content.strip()
 
@@ -142,7 +147,7 @@ def missing_posix_display():
   return 'DISPLAY' not in os.environ or not os.environ["DISPLAY"]
 
 def prompt_user_for_action(config, ask_flag, response):
-  print("Command: " + colored(response, config["suggested_command_color"]))
+  print("Command: " + colored(response, config["suggested_command_color"], attrs=['bold']))
   
   modify_snippet = ""
   if bool(config["modify"]) == True:
