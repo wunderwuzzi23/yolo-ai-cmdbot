@@ -145,16 +145,14 @@ def prompt_user_for_action(config, ask_flag, response):
   print("Command: " + colored(response, 'blue'))
   #print(config["safety"])
 
+  modify_snippet = ""
   if bool(config["modify"]) == True:
     modify_snippet = " [m]odify"
-  else:
-    modify_snippet = ""
-
+    
+  copy_to_clipboard_snippet = " [c]opy to clipboard"
   if os.name == "posix" and missing_posix_display():
-    copy_to_clipboard_snippet = ""
-  else:
-    copy_to_clipboard_snippet = " [c]opy to clipboard"
-
+    if get_os_friendly_name() != "Darwin/macOS":
+      copy_to_clipboard_snippet = ""
 
   if bool(config["safety"]) == True or ask_flag == True:
     prompt_text = f"Execute command? [Y]es [n]o{modify_snippet}{copy_to_clipboard_snippet} ==> "
@@ -189,7 +187,8 @@ def eval_user_intent_and_execute(client, config, user_input, command, shell, ask
   
   if user_input.upper() == "C":
       if os.name == "posix" and missing_posix_display():
-        return
+        if get_os_friendly_name() != "Darwin/macOS":
+          return
       pyperclip.copy(command) 
       print("Copied command to clipboard.")
 
