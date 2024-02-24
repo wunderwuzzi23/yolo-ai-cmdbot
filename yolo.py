@@ -6,7 +6,6 @@
 
 import os
 import platform
-import openai
 from openai import OpenAI
 import sys
 import subprocess
@@ -147,15 +146,24 @@ def prompt_user_input(config, ask_flag, response):
   print("Command: " + colored(response, 'blue'))
   #print(config["safety"])
 
+  if bool(config["modify"]) == True:
+    modify_snippet = " [m]odify"
+  else:
+    modify_snippet = ""
+
+  if os.name == "posix" and missing_posix_display():
+    copy_to_clipboard_snippet = ""
+  else:
+    copy_to_clipboard_snippet = " [c]opy to clipboard"
+
+
   if bool(config["safety"]) == True or ask_flag == True:
-    prompt_text = "Execute command? [Y]es [n]o [m]odify [c]opy to clipboard ==> "
-    if os.name == "posix" and missing_posix_display():
-        prompt_text =  "Execute command? [Y]es [n]o [m]odify ==> "
+    prompt_text = f"Execute command? [Y]es [n]o{modify_snippet}{copy_to_clipboard_snippet} ==> "
     print(prompt_text, end = '')
     user_input = input()
     return user_input 
   
-  if config["safety"] == False:
+  if bool(config["safety"]) == False:
      return "Y"
 
 def evaluate_input(client, config, user_input, command, shell, ask_flag):
@@ -166,7 +174,7 @@ def evaluate_input(client, config, user_input, command, shell, ask_flag):
       # Unix: /bin/bash /bin/zsh: uses -c both Ubuntu and macOS should work, others might not
       subprocess.run([shell, "-c", command], shell=False)
   
-  if user_input.upper() == "M":
+  if bool(config["modify"]) and user_input.upper() == "M":
     print("Modify prompt: ", end = '')
     modded_query = input()
     modded_response = call_open_ai(client, modded_query, config, shell)
