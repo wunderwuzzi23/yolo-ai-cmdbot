@@ -139,12 +139,11 @@ def check_for_markdown(response):
     sys.exit(-1)
 
 def missing_posix_display():
-  return 'DISPLAY' not in os.environ or not os.environ['DISPLAY']
+  return 'DISPLAY' not in os.environ or not os.environ["DISPLAY"]
 
 def prompt_user_for_action(config, ask_flag, response):
-  print("Command: " + colored(response, 'blue'))
-  #print(config["safety"])
-
+  print("Command: " + colored(response, config["suggested_command_color"], attrs=['bold']))
+  
   modify_snippet = ""
   if bool(config["modify"]) == True:
     modify_snippet = " [m]odify"
