@@ -1,7 +1,11 @@
 # Yolo Demo
 
 ![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
-
+# Update Yolo v0.4 - Support for Aliyun DashScope Api
+* Key changes are support for Aliyun DashScope Api. 
+* You can overwrite yolo.aliyun.example.yaml to yolo.yaml, and then modify the value in tongyi_api_key to your api key value.
+Apply for Aliyun dashscope api key [click here](https://help.aliyun.com/zh/dashscope/developer-reference/activate-dashscope-and-create-an-api-key?spm=a2c4g.11186623.0.i2#/), it is free now
+* Now if you select aliyun dashscope api (the value of api is set to "tongyi"), the Chinese prompt word file prompt_zh-CN.txt will be automatically used
 # Update Yolo v0.3 - Support for Azure OpenAI
 
 * Key changes are upgrades to the latest OpenAI libraries and support for Azure OpenAI. There is an `api` key in the `yolo.yaml` that can be set to `azure_openai` and then you can provide all the parameters accordingly in the yaml file as well (`api-version`, your `azure-endpoint`,...). The api key for azure is called `AZURE_OPENAI_API_KEY` by the way. It can be set via environment variable and config file.
