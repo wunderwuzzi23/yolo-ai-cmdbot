@@ -6,6 +6,7 @@
 
 import os
 import platform
+import dashscope
 from openai import OpenAI
 from openai import AzureOpenAI 
 import sys
@@ -17,6 +18,7 @@ import pyperclip
 
 from termcolor import colored
 from colorama import init
+from http import HTTPStatus
 
 def read_config() -> any:
 
@@ -30,7 +32,7 @@ def read_config() -> any:
     return yaml.safe_load(file)
 
 # Construct the prompt
-def get_full_prompt(user_prompt, shell):
+def get_full_prompt(user_prompt, shell, lang = "en"):
 
   ## Find the executing directory (e.g. in case an alias is set)
   ## So we can find the prompt.txt file
@@ -38,7 +40,11 @@ def get_full_prompt(user_prompt, shell):
   prompt_path = os.path.dirname(yolo_path)
 
   ## Load the prompt and prep it
-  prompt_file = os.path.join(prompt_path, "prompt.txt")
+  prompt_file = ""
+  if lang == "zh-CN":
+    prompt_file = os.path.join(prompt_path, "prompt_zh-CN.txt")
+  else:
+    prompt_file = os.path.join(prompt_path, "prompt.txt")
   pre_prompt = open(prompt_file,"r").read()
   pre_prompt = pre_prompt.replace("{shell}", shell)
   pre_prompt = pre_prompt.replace("{os}", get_os_friendly_name())
@@ -80,7 +86,16 @@ def get_os_friendly_name():
   else:
     return os_name
 
-
+def remove_markdown_code(string):
+  if string.startswith("```") and string.endswith("```"):
+    return string[3:-3].strip().split('\n', 1)[-1]
+  else:
+    return string
+def remove_backticks(string):
+    if string.startswith("`") and string.endswith("`"):
+        return string[1:-1]
+    else:
+        return string
 def create_client(config):
 
   dotenv.load_dotenv()
@@ -106,7 +121,16 @@ def create_client(config):
       api_key=open(os.path.join(home_path,".openai.apikey"), "r").readline().strip()
   
     api_key = api_key
-    return OpenAI(api_key=api_key) 
+    return OpenAI(api_key=api_key)
+
+  if config["api"] == "tongyi":
+    api_key = os.getenv("TONGYI_API_KEY")
+    if not api_key:  api_key=config["tongyi_api_key"]
+    if not api_key:  # If statement to avoid "invalid filepath" error
+      home_path = os.path.expanduser("~")
+      api_key = open(os.path.join(home_path, ".tongyi.apikey"), "r").readline().strip()
+    dashscope.api_key = api_key
+    return dashscope.Generation
 
 def call_open_ai(client, query, config, shell):
   # do we have a prompt from the user?
@@ -115,11 +139,31 @@ def call_open_ai(client, query, config, shell):
       sys.exit(-1)
  
   # Load the correct prompt based on Shell and OS and append the user's prompt
-  prompt = get_full_prompt(query, shell)
+  lang = ""
+  if config["api"] == "tongyi":
+    lang = "zh-CN"
+  else:
+    lang = "en"
+  prompt = get_full_prompt(query, shell, lang)
 
   # Make the first line also the system prompt
   system_prompt = prompt.split('\n')[0]
-  #print(prompt)
+
+  if config['api'] == 'tongyi':
+    response = client.call(
+    model=config['model'],
+    prompt=prompt,
+    seed=1234,
+    top_p=0.8,
+    result_format='message',
+    max_tokens=config['max_tokens'],
+    temperature=config['temperature'],
+    repetition_penalty=1.0
+    )
+    if response.status_code == HTTPStatus.OK:
+      return remove_backticks(remove_markdown_code(response.output.choices[0].message.content.strip()))
+
+
 
   # Call the API
   response = client.chat.completions.create(
