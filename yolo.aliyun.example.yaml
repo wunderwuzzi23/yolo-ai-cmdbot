@@ -19,5 +19,5 @@ suggested_command_color: blue # Suggested Command Color
 # API Keys (optional): The key can aso be provided via environment variable (OPENAI_API_KEY, AZURE_OPENAI_API_KEY), .env, or ~/.openai.apikey file
 azure_openai_api_key: 
 openai_api_key:
-tongyi_api_key:
+tongyi_api_key: sk-25a9bebb0ac14eeda59es033e4764b65
 
