@@ -2,6 +2,13 @@
 
 ![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
 
+# Update Yolo v0.4 - Support for Groq
+
+* Added groq support. You can get an API key at `https://console.groq.com` and set mode to for instance `llama3-8b-8192`. groq is lightning fast. 
+* Simplified and improved default `prompt.txt`, 
+* Note: Testing shows that model `gpt-4o` gives the best results.
+
+
 # Update Yolo v0.3 - Support for Azure OpenAI
 
 * Key changes are upgrades to the latest OpenAI libraries and support for Azure OpenAI. There is an `api` key in the `yolo.yaml` that can be set to `azure_openai` and then you can provide all the parameters accordingly in the yaml file as well (`api-version`, your `azure-endpoint`,...). The api key for azure is called `AZURE_OPENAI_API_KEY` by the way. It can be set via environment variable and config file.
@@ -59,6 +66,11 @@ There are three ways to configure the key on Linux and macOS:
 - You can either `export AZURE_OPENAI_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `AZURE_OPENAI_API_KEY="<yourkey>"` as a line
 - Create a file at `~/.azureopenai.apikey` with the key in it
 - Set the key in the `yolo.yaml` configuration file
+
+### Groq Configuration
+- Grab an API key from `console.groq.com` 
+- You can either `export GROQ_API_KEY=<yourkey>`, or have a `.env` file in the same directory as `yolo.py` with `GROQ_API_KEY="<yourkey>"` as a line
+- Set `api` and `model` (e.g llama3-8b-8192) in `yolo.yaml` configuration file
 
 ## Aliases
 
