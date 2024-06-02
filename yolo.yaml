@@ -1,4 +1,4 @@
-api: groq     # openai, azure_openai, groq         
+api: openai     # openai, azure_openai, groq         
 model: gpt-4o # if azure_openai this is the deployment name, for groq, e.g llama3-8b-8192
 
 # Azure specific (only needed if api: azure-openai)
