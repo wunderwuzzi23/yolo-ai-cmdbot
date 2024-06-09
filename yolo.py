@@ -8,6 +8,7 @@ import os
 import platform
 from openai import OpenAI
 from openai import AzureOpenAI 
+from groq import Groq
 import sys
 import subprocess
 import dotenv 
@@ -51,7 +52,7 @@ def get_full_prompt(user_prompt, shell):
   return prompt
 
 def print_usage(config):
-  print("Yolo v0.3 - by @wunderwuzzi23")
+  print("Yolo v0.4 - by @wunderwuzzi23 (June 1, 2024)")
   print()
   print("Usage: yolo [-a] list the current directory information")
   print("Argument: -a: Prompt the user before running the command (only useful when safety is off)")
@@ -67,10 +68,8 @@ def print_usage(config):
 
 
 def get_os_friendly_name():
-  
-  # Get OS Name
   os_name = platform.system()
-  
+
   if os_name == "Linux":
     return "Linux/"+distro.name(pretty=True)
   elif os_name == "Windows":
@@ -79,7 +78,6 @@ def get_os_friendly_name():
     return "Darwin/macOS"
   else:
     return os_name
-
 
 def create_client(config):
 
@@ -107,21 +105,28 @@ def create_client(config):
   
     api_key = api_key
     return OpenAI(api_key=api_key) 
+  
+  if config["api"] == "groq":
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key: 
+      api_key=config["groq_api_key"]
+    
+    return Groq(api_key=api_key)
 
-def call_open_ai(client, query, config, shell):
+def chat_completion(client, query, config, shell):
   # do we have a prompt from the user?
   if query == "":
       print ("No user prompt specified.")
       sys.exit(-1)
  
-  # Load the correct prompt based on Shell and OS and append the user's prompt
+  # Load prompt based on Shell and OS and append the user's prompt
   prompt = get_full_prompt(query, shell)
 
-  # Make the first line also the system prompt
+  # Make the first line the system prompt
   system_prompt = prompt.split('\n')[0]
   #print(prompt)
 
-  # Call the API
+  # Call the Model API
   response = client.chat.completions.create(
     model=config["model"],
     messages=[
@@ -232,7 +237,7 @@ def main():
   user_prompt = " ".join(arguments)
 
   ## core prompting loop logic
-  result = call_open_ai(client, user_prompt, config, shell) 
+  result = chat_completion(client, user_prompt, config, shell) 
   check_for_issue(result)
   check_for_markdown(result)
 
