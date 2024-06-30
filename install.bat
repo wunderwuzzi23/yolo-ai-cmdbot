@@ -5,6 +5,7 @@ setlocal enabledelayedexpansion
 if not exist %~dp0\yolo.py ( echo `yolo.py` missing in %~dp0 cannot install & goto :choice_default_3 )
 if not exist %~dp0\prompt.txt ( echo `prompt.txt` missing in %~dp0 cannot install & goto :choice_default_3 ) 
 if not exist %~dp0\yolo.yaml ( echo `yolo.yaml` missing in %~dp0 cannot install & goto :choice_default_3 ) 
+if not exist %~dp0\ai_model.py ( echo `ai_model.py` missing in %~dp0 cannot install & goto :choice_default_3 ) 
 
 
 :: Note: "~" or %HOME% is equivalent to "%HOMEDRIVE%%HOMEPATH%\" but the latter is set in VM environments (from what I can tell)
@@ -137,6 +138,7 @@ mkdir !TARGET_DIR!
 copy  %~dp0\yolo.py !TARGET_DIR!
 copy  %~dp0\prompt.txt !TARGET_DIR!
 copy  %~dp0\yolo.yaml !TARGET_DIR!
+copy  %~dp0\ai_model.py !TARGET_DIR!
 goto :EOF
 
 :: Create yolo.bat and input code linking to created directory
@@ -312,6 +314,6 @@ echo   -If you run PowerShell as administrator you can then run `setx OPENAI_API
 echo   -Go to `Start` and search `edit environment variables for your account` and manually create the variable with name `OPENAI_API_KEY` and value `[yourkey]`
 echo (4) Another option is to put the API key in the yolo.yaml configuration file (since v.0.2)
 echo.
-echo Yolo also supports Azure OpenAI now. Configure settings in yolo.yaml accordingly.
+echo Yolo also supports Azure OpenAI, and many other LLMs now. Configure settings in yolo.yaml accordingly.
 echo.
 goto :EOF

@@ -7,7 +7,7 @@ TARGET_FULLPATH=$TARGET_DIR/yolo.py
 mkdir -p $TARGET_DIR
 
 echo "- Copying files..."
-cp yolo.py prompt.txt yolo.yaml $TARGET_DIR
+cp yolo.py prompt.txt yolo.yaml ai_model.py $TARGET_DIR
 chmod +x $TARGET_FULLPATH
 
 # Creates two aliases for use
@@ -34,11 +34,11 @@ fi
 echo
 echo "Done."
 echo
-echo "Make sure you have the OpenAI API key set via one of these options:" 
+echo "Make sure you have your LLM key (e.g. OpenAI API) set via one of these options:" 
 echo "  - environment variable"
-echo "  - .env or an ~/.openai.apikey file or in"
+echo "  - .env or in"
 echo "  - yolo.yaml"
 echo
-echo "Yolo also supports Azure OpenAI now. Change settings in yolo.yaml accordingly."
+echo "Yolo also supports Azure OpenAI, Ollama, groq, Claude now. Change settings in yolo.yaml accordingly."
 echo
 echo "Have fun!"
