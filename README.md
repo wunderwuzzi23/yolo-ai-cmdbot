@@ -2,6 +2,12 @@
 
 ![Animated GIF](https://github.com/wunderwuzzi23/blog/raw/master/static/images/2023/yolo-shell-anim-gif.gif)
 
+# Update Yolo v0.5 - Support for Claude and other providers
+
+* Added Claude support. Can an API key from Anthropic, current model `claude-3-5-sonnet-20240620`. 
+* ai_model.py to abstract model usage and allow adding new providers more easily
+* Rewrote some logic to simplify and generalize support for various new APIs (like Ollama, Claude)
+
 # Update Yolo v0.4 - Support for Groq
 
 * Added groq support. You can get an API key at `https://console.groq.com` and set mode to for instance `llama3-8b-8192`. groq is lightning fast. 

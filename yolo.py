@@ -6,21 +6,17 @@
 
 import os
 import platform
-from openai import OpenAI
-from openai import AzureOpenAI 
-from groq import Groq
+from ai_model import AIModel, GroqModel, OpenAIModel, OllamaModel, AnthropicModel, AzureOpenAIModel
 import sys
 import subprocess
 import dotenv 
 import distro
 import yaml
 import pyperclip
-
 from termcolor import colored
 from colorama import init
 
-def read_config() -> any:
-
+def read_config():
   ## Find the executing directory (e.g. in case an alias is set)
   ## So we can find the config file
   yolo_path = os.path.abspath(__file__)
@@ -30,9 +26,7 @@ def read_config() -> any:
   with open(config_file, 'r') as file:
     return yaml.safe_load(file)
 
-# Construct the prompt
-def get_full_prompt(user_prompt, shell):
-
+def get_system_prompt(shell):
   ## Find the executing directory (e.g. in case an alias is set)
   ## So we can find the prompt.txt file
   yolo_path = os.path.abspath(__file__)
@@ -40,19 +34,19 @@ def get_full_prompt(user_prompt, shell):
 
   ## Load the prompt and prep it
   prompt_file = os.path.join(prompt_path, "prompt.txt")
-  pre_prompt = open(prompt_file,"r").read()
-  pre_prompt = pre_prompt.replace("{shell}", shell)
-  pre_prompt = pre_prompt.replace("{os}", get_os_friendly_name())
-  prompt = pre_prompt + user_prompt
-  
-  # be nice and make it a question
+  system_prompt = open(prompt_file,"r").read()
+  system_prompt = system_prompt.replace("{shell}", shell)
+  system_prompt = system_prompt.replace("{os}", get_os_friendly_name())
+
+  return system_prompt
+
+def ensure_prompt_is_question(prompt):
   if prompt[-1:] != "?" and prompt[-1:] != ".":
     prompt+="?"
-
   return prompt
 
 def print_usage(config):
-  print("Yolo v0.4 - by @wunderwuzzi23 (June 1, 2024)")
+  print("Yolo v0.5 - by @wunderwuzzi23 (June 29, 2024)")
   print()
   print("Usage: yolo [-a] list the current directory information")
   print("Argument: -a: Prompt the user before running the command (only useful when safety is off)")
@@ -66,7 +60,6 @@ def print_usage(config):
   print("* Safety       : " + str(bool(config["safety"])))
   print("* Command Color: " + str(config["suggested_command_color"]))
 
-
 def get_os_friendly_name():
   os_name = platform.system()
 
@@ -79,64 +72,23 @@ def get_os_friendly_name():
   else:
     return os_name
 
-def create_client(config):
-
-  dotenv.load_dotenv()
-
-  if config["api"] == "azure_openai": 
-    api_key = os.getenv("AZURE_OPENAI_API_KEY")
-    if not api_key:  api_key=config["azure_openai_api_key"]
-    if not api_key: 
-      home_path = os.path.expanduser("~")   
-      api_key=open(os.path.join(home_path,".azureopenai.apikey"), "r").readline().strip()
-
-    return AzureOpenAI(
-      azure_endpoint=config["azure_endpoint"], 
-      api_key=api_key, 
-      api_version=config["azure_api_version"]
-    )
-  
-  if config["api"] == "openai": 
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:  api_key=config["openai_api_key"]
-    if not api_key:  #If statement to avoid "invalid filepath" error
-      home_path = os.path.expanduser("~")   
-      api_key=open(os.path.join(home_path,".openai.apikey"), "r").readline().strip()
-  
-    api_key = api_key
-    return OpenAI(api_key=api_key) 
-  
-  if config["api"] == "groq":
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key: 
-      api_key=config["groq_api_key"]
-    
-    return Groq(api_key=api_key)
-
 def chat_completion(client, query, config, shell):
-  # do we have a prompt from the user?
   if query == "":
       print ("No user prompt specified.")
       sys.exit(-1)
  
-  # Load prompt based on Shell and OS and append the user's prompt
-  prompt = get_full_prompt(query, shell)
+  system_prompt = get_system_prompt(shell)
 
-  # Make the first line the system prompt
-  system_prompt = prompt.split('\n')[0]
-  #print(prompt)
-
-  # Call the Model API
-  response = client.chat.completions.create(
+  response = client.chat(
     model=config["model"],
     messages=[
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": prompt}
+        {"role": "user", "content": query}
     ],
     temperature=config["temperature"],
     max_tokens=config["max_tokens"])
  
-  return response.choices[0].message.content.strip()
+  return response
 
 def check_for_issue(response):
   prefixes = ("sorry", "i'm sorry", "the question is not clear", "i'm", "i am")
@@ -145,7 +97,6 @@ def check_for_issue(response):
     sys.exit(-1)
 
 def check_for_markdown(response):
-  # odd corner case, sometimes ChatCompletion returns markdown
   if response.count("```",2):
     print(colored("The proposed command contains markdown, so I did not execute the response directly: \n", 'red')+response)
     sys.exit(-1)
@@ -189,7 +140,7 @@ def eval_user_intent_and_execute(client, config, user_input, command, shell, ask
   if bool(config["modify"]) and user_input.upper() == "M":
     print("Modify prompt: ", end = '')
     modded_query = input()
-    modded_response = call_open_ai(client, modded_query, config, shell)
+    modded_response = chat_completion(client, modded_query, config, shell)
     check_for_issue(modded_response)
     check_for_markdown(modded_response)
     user_intent = prompt_user_for_action(config, ask_flag, modded_response)
@@ -203,14 +154,12 @@ def eval_user_intent_and_execute(client, config, user_input, command, shell, ask
       pyperclip.copy(command) 
       print("Copied command to clipboard.")
 
-  
-
 def main():
-  #Enable color output on Windows using colorama
-  init() 
-  
+  init()  #Enable color output on Windows using colorama
+  dotenv.load_dotenv()
+
   config = read_config()
-  client = create_client(config)
+  client = AIModel.get_model_client(config)
 
   # Unix based SHELL (/bin/bash, /bin/zsh), otherwise assuming it's Windows
   shell = os.environ.get("SHELL", "powershell.exe") 
@@ -230,9 +179,8 @@ def main():
     ask_flag = True
     command_start_idx = 2
 
-  # To allow easy/natural use we don't require the input to be a 
-  # single string. So, the user can just type yolo what is my name?
-  # without having to put the question between ''
+  # To allow easy/natural use we don't require the input to be a single string.
+  # User can just type yolo what is my name? without having to put the question between ''
   arguments = sys.argv[command_start_idx:]
   user_prompt = " ".join(arguments)
 
@@ -245,6 +193,6 @@ def main():
   print()
   eval_user_intent_and_execute(client, config, users_intent, result, shell, ask_flag)
 
-
 if __name__ == "__main__":
   main()
+  
