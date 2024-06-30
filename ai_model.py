@@ -38,7 +38,7 @@ class AIModel(ABC):
                 api_key=open(os.path.join(home_path,".openai.apikey"), "r").readline().strip()
                 api_key = api_key
 
-            return OpenAIModel(api_key=os.environ.get("OPENAI_API_KEY"))
+            return OpenAIModel(api_key=api_key)
         
         elif api_provider == "azure":
             api_key = os.getenv("AZURE_OPENAI_API_KEY")
