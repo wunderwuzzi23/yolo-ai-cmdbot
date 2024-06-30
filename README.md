@@ -109,6 +109,22 @@ You also have the option to:
 
 That's it basically.
 
+
+### PowerShell Command 
+
+If you want a PowerShell style command you can use something like this (check that the path is to yolo.py is correct) and you can add this function to your PowerShell profile. 
+
+```
+function Invoke-Yolo { 
+    param([Parameter(ValueFromRemainingArguments=$true)]$Commands)
+    $AllCommands = $Commands -join " "
+    $YoloPath = Join-Path -Path $env:USERPROFILE -ChildPath "\yolo-ai-cmdbot\yolo.py"
+    python.exe $YoloPath $AllCommands
+}
+```
+
+You can find the profile file with `$PROFILE` in a PowerShell Terminal. I might add a better installation in future.
+
 ## OpenAI API Key Configuration on Windows
 
 On Windows `export OPENAI_API_KEY=<yourkey>` will not work instead:
