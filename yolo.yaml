@@ -1,5 +1,6 @@
-api: openai     # openai, azure_openai, groq         
-model: gpt-4o # if azure_openai this is the deployment name, for groq, e.g llama3-8b-8192
+api: openai   # openai, azure, groq, ollama, anthropic         
+model: gpt-4o # if azure this is the deployment name
+              # other options: gpt-4o, llama3-8b-8192, or claude-3-5-sonnet-20240620
 
 # Azure specific (only needed if api: azure-openai)
 azure_endpoint: https://<name>.openai.azure.com
@@ -14,8 +15,9 @@ modify: False                 # Enable prompt modify feature
 suggested_command_color: blue # Suggested Command Color
 
 # API Keys (optional): Preferred to use environment variables 
-# OPENAI_API_KEY, AZURE_OPENAI_API_KEY or GROQ_API_KEY (.env file is also supported)
+# OPENAI_API_KEY, AZURE_OPENAI_API_KEY, ANTHROPIC_API_KEY or GROQ_API_KEY (.env file is also supported)
 azure_openai_api_key: 
 openai_api_key:
 groq_api_key:
+anthropic_api_key:
 
